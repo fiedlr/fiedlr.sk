@@ -14,7 +14,8 @@ import           Control.Monad
 -- Courtesy of https://github.com/jaspervdj/hakyll/issues/471
 addLinkCitations (Pandoc meta a) =
     let prevMap = unMeta meta
-        newMap = M.insert "link-citations" (MetaBool True) prevMap
+        newMap = M.insert "link-citations" (MetaBool True) 
+               $ M.insert "reference-section-title" (MetaString "References") prevMap
         newMeta = Meta newMap
     in  Pandoc newMeta a
 
