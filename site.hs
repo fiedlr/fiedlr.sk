@@ -57,7 +57,11 @@ pandocBiblioCompilerWith ropt wopt cslFileName bibFileName = do
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyll $ do
-    match (fromList [".htaccess", "browserconfig.xml", "favicon.ico", "images/*"])  $ do
+    match (fromList [".htaccess", "browserconfig.xml", "robots.txt", "favicon.ico"])  $ do
+        route   idRoute
+        compile copyFileCompiler
+
+    match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
 
