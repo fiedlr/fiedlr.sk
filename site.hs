@@ -11,6 +11,15 @@ import           Text.Pandoc
 import           Control.Monad
 
 --------------------------------------------------------------------------------
+writerOptions :: WriterOptions
+writerOptions = def {
+    writerExtensions = (writerExtensions defaultHakyllWriterOptions) <> extensionsFromList [
+        Ext_tex_math_dollars, Ext_tex_math_double_backslash, Ext_latex_macros
+    ],
+    writerHTMLMathMethod = MathJax ""
+}
+
+--------------------------------------------------------------------------------
 -- Courtesy of https://github.com/jaspervdj/hakyll/issues/471
 addLinkCitations (Pandoc meta a) =
     let prevMap = unMeta meta
@@ -33,12 +42,12 @@ readPandocBiblioWithLinks ropt csl biblio item = do
 
     return $ fmap (const pandoc') item
 
-pandocBiblioCompilerWith :: WriterOptions 
-                         -> ReaderOptions 
+pandocBiblioCompilerWith :: ReaderOptions 
+                         -> WriterOptions
                          -> String 
                          -> String 
                          -> Compiler (Item String)
-pandocBiblioCompilerWith wopt ropt cslFileName bibFileName = do
+pandocBiblioCompilerWith ropt wopt cslFileName bibFileName = do
     csl <- load $ fromFilePath cslFileName
     bib <- load $ fromFilePath bibFileName
     liftM (writePandocWith wopt)
@@ -69,8 +78,8 @@ main = hakyll $ do
         compile $ do
             id         <- getUnderlying
             biblioFile <- getMetadataField id "bibliography"
-            maybe pandocCompiler (\biblioFileName ->
-                pandocBiblioCompilerWith def def 
+            maybe (pandocCompilerWith def writerOptions) (\biblioFileName ->
+                pandocBiblioCompilerWith def writerOptions 
                     "csl/journal-of-mathematical-physics.csl"
                     ("bib" </> biblioFileName <.> "bib")
                 ) biblioFile
