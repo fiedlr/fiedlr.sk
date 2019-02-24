@@ -20,13 +20,6 @@ body {
 	line-height: 1.5;
 }
 
-p {
-  font-family: 'Crimson Text', serif;
-	font-size: 1.8rem;
-  line-height: 2.5rem;
-  max-width: 60rem;
-}
-
 header {
   background: #232323;
   display: block;
@@ -55,13 +48,17 @@ header {
 .caption { 
 	display: block;
   text-align: center;
-  color #fff;
+  color: #fff;
 }
 
 .caption span {
 	font-family: 'Railway', sans-serif;
 	font-size: 0.75em;
 	letter-spacing: 0.33em;
+}
+
+.references {
+  line-height: 0.5rem;
 }
 
 .social {
@@ -103,8 +100,8 @@ footer {
 }
 
 a {
-	color: #009ec2;
-	text-decoration: none;
+  color: white;
+	text-decoration: underline;
 }
 
 a:hover {
@@ -128,10 +125,13 @@ h1 {
 	letter-spacing: 0.2em;
 }
 
-h2 {
+#bibliography, h2 {
 	font-family: 'Railway', sans-serif;
 	font-weight: normal;
-	font-size: 1.6em;
+  font-size: 1.6em;
+  text-transform: none;
+  color: #fff;
+  letter-spacing: normal;
 	margin: 1.6rem 0;
 }
 
@@ -143,9 +143,11 @@ article .meta {
 }
 
 article .body {
-  font-size: 1.8rem;
-  line-height: 1.8rem;
   text-align: justify;
+  font-family: 'Crimson Text', serif;
+	font-size: 1.8rem;
+  line-height: 2.5rem;
+  max-width: 60rem;
 }
 
 #bibliography {
