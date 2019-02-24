@@ -12,8 +12,8 @@ import           Control.Monad
 
 --------------------------------------------------------------------------------
 writerOptions :: Maybe String -> WriterOptions
-writerOptions Nothing = def 
-writerOptions _       = def {
+writerOptions Nothing = defaultHakyllWriterOptions 
+writerOptions _       = defaultHakyllWriterOptions {
     writerExtensions = (writerExtensions defaultHakyllWriterOptions) <> extensionsFromList [
         Ext_tex_math_dollars, Ext_tex_math_double_backslash, Ext_latex_macros
     ],
@@ -81,8 +81,8 @@ main = hakyll $ do
             mathJax    <- getMetadataField id "mathjax"
             biblioFile <- getMetadataField id "bibliography"
             
-            maybe (pandocCompilerWith def (writerOptions mathJax)) (\biblioFileName ->
-                pandocBiblioCompilerWith def (writerOptions mathJax)
+            maybe (pandocCompilerWith defaultHakyllReaderOptions (writerOptions mathJax)) (\biblioFileName ->
+                pandocBiblioCompilerWith defaultHakyllReaderOptions (writerOptions mathJax)
                     "csl/journal-of-mathematical-physics.csl"
                     ("bib" </> biblioFileName <.> "bib")
                 ) biblioFile
