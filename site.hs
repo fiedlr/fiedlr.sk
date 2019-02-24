@@ -11,8 +11,9 @@ import           Text.Pandoc
 import           Control.Monad
 
 --------------------------------------------------------------------------------
-writerOptions :: WriterOptions
-writerOptions = def {
+writerOptions :: Maybe String -> WriterOptions
+writerOptions Nothing = def 
+writerOptions _       = def {
     writerExtensions = (writerExtensions defaultHakyllWriterOptions) <> extensionsFromList [
         Ext_tex_math_dollars, Ext_tex_math_double_backslash, Ext_latex_macros
     ],
@@ -77,12 +78,15 @@ main = hakyll $ do
         route   $ setExtension "html"
         compile $ do
             id         <- getUnderlying
+            mathJax    <- getMetadataField id "mathjax"
             biblioFile <- getMetadataField id "bibliography"
-            maybe (pandocCompilerWith def writerOptions) (\biblioFileName ->
-                pandocBiblioCompilerWith def writerOptions 
+            
+            maybe (pandocCompilerWith def (writerOptions mathJax)) (\biblioFileName ->
+                pandocBiblioCompilerWith def (writerOptions mathJax)
                     "csl/journal-of-mathematical-physics.csl"
                     ("bib" </> biblioFileName <.> "bib")
                 ) biblioFile
+            
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
@@ -92,8 +96,8 @@ main = hakyll $ do
         compile $ do
             posts <- recentFirst =<< loadAll "posts/*"
             let archiveCtx =
-                    listField "posts" postCtx (return posts) `mappend`
-                    constField "title" "Essays"            `mappend`
+                    listField "posts" postCtx (return posts) <>
+                    constField "title" "Essays"              <>
                     defaultContext
 
             makeItem ""
@@ -119,6 +123,4 @@ main = hakyll $ do
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
-postCtx =
-    dateField "date" "%B %e, %Y" `mappend`
-    defaultContext
+postCtx = dateField "date" "%B %e, %Y" <> defaultContext
