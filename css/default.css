@@ -29,7 +29,15 @@ p {
 
 header {
   background: #232323;
+  display: block;
+  padding-top: 2rem;
+  width: 100%;
   text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logo {
+  font-size: 1.8rem;
 }
 
 .round {
@@ -39,27 +47,28 @@ header {
 	border-radius: 100%;
 	background: transparent;
 	color: transparent;
-	display: inline-block;
-	vertical-align: middle;
 	overflow: hidden;
 	-webkit-transition: 500ms;
 	transition: 500ms;
 }
 
 .caption { 
-	margin: 10px 0;
 	display: block;
-	text-align: center;
+  text-align: center;
+  color #fff;
 }
 
 .caption span {
 	font-family: 'Railway', sans-serif;
 	font-size: 0.75em;
 	letter-spacing: 0.33em;
-	color: #919191;
 }
 
-.social a { display: inline-block; width: 2em; height: 2em; padding: 0.3em; overflow: hidden; margin: 0 0.8%; }
+.social {
+  padding-bottom: 1rem;
+}
+
+.social a { display: inline-block; width: 1.7em; height: 1.7em; padding: 0.2em; overflow: hidden; margin: 0 0.8%; }
 .social a:hover { background-color: #fff; -webkit-transition: background-color 300ms; transition: background-color 300ms; }
 .social .fa { font-size: 1.2em; color: #fff; }
 
@@ -74,6 +83,7 @@ header {
 
 nav {
   text-align: right;
+  margin: 0 auto 1rem;
 }
 
 nav a {
@@ -86,7 +96,10 @@ nav a {
 
 footer {
   width: 100%;
-  height: 20px;
+  height: 4rem;
+  color: #919191;
+  text-align: center;
+  font-size: 1.1rem;
 }
 
 a {
@@ -106,14 +119,7 @@ button {
 }
 
 h1 {
-	font-family: 'Railway', sans-serif;
-	font-weight: normal;
-	font-size: 1.8em;
-	margin: 0 0 -6px;
-}
-
-h2 {
-	margin: 5% 0;
+	margin: 0 0 2rem;
 	font-family: 'Railway', sans-serif;
 	font-weight: lighter;
 	font-size: 2em;
@@ -122,22 +128,24 @@ h2 {
 	letter-spacing: 0.2em;
 }
 
+h2 {
+	font-family: 'Railway', sans-serif;
+	font-weight: normal;
+	font-size: 1.6em;
+	margin: 1.6rem 0;
+}
+
 article .meta {
   font-size: 1.4rem;
   font-style: italic;
-  color: #555;
+  color: #919191;
+  margin: -2rem 0 0;  
 }
 
 article .body {
   font-size: 1.8rem;
   line-height: 1.8rem;
   text-align: justify;
-}
-
-.logo a {
-  font-weight: bold;
-  color: #000;
-  text-decoration: none;
 }
 
 #bibliography {
@@ -149,29 +157,15 @@ article .body {
     margin: 0;
   }
 
-  .logo {
-    width: 100%;
-    max-width: 75px;
-  }
-
   main {
     padding: 0 5%;
+    min-height: 65%;
   }
   
   nav {
-    margin: 0 auto 3rem;
     text-align: center;
   }
-  footer {
-    text-align: center;
-  }
-  .logo {
-    text-align: center;
-    margin: 1rem auto 3rem;
-  }
-  .logo a {
-    font-size: 2.4rem;
-  }
+  
   nav a {
     display: block;
     line-height: 1.6;
@@ -183,23 +177,18 @@ article .body {
     margin: 0;
   }
 
-  .caption {
-    display: inline-block;
+  main {
+    padding: 0 5%;
+    min-height: 70%;
   }
 
   nav {
-    margin: 0 auto 3rem;
     text-align: center;
   }
-  footer {
-    text-align: center;
-  }
+ 
   .logo {
     text-align: center;
-    margin: 1rem auto 3rem;
-  }
-  .logo a {
-    font-size: 2.4rem;
+    margin: 0 auto;
   }
   nav a {
     display: inline;
@@ -214,50 +203,57 @@ article .body {
     padding: 0;
   }
 
+  .round {
+    display: block;
+  }
+
   .caption {
-    display: inline-block;  
+    margin: 0.7rem 0 2rem;
+    text-align: left; 
   }
 
   header {
     padding-top: 4rem;
     position: fixed;
     right: 0;
-    width: 20%;
+    width: 25%;
     height: 100%;
   }
   .social {
     position: absolute;
     width: 100%;
-    bottom: 4em;
+    bottom: 1em;
   }
 
   main {
-    width: 80%;
+    width: 75%;
     min-height: 90%;
-    padding-top: 4rem;
-    padding: 0 10%;
+    padding: 4rem 10%;
   }
   nav {
-    margin: 0 auto;
-    width: 80%;
+    width: 75%;
     text-align: left;
   }
   nav a {
-    margin: 0 0 0 1.2rem;
+    margin: 0;
     display: block;
   }
   footer {
-    text-align: right;
-    padding-right: 4rem;
+    padding: 0 10%;
     width: 75%;
   }
   .logo {
     margin: 0 auto;
-    width: 80%;
+    width: 75%;
     text-align: left;
   }
-  .logo a {
-    float: left;
-    font-size: 1.8rem;
+}
+
+@media (min-width: 920px) {
+  footer {
+    text-align: left;
+  }
+  .heart {
+    float: right;
   }
 }
