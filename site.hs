@@ -25,21 +25,16 @@ main = hakyll $ do
     match "csl/*" $ compile cslCompiler
     match "bib/*" $ compile biblioCompiler
 
-    match "posts/2019-01-30-sample.tex" $ do
+    match "posts/*" $ do
         route   $ setExtension "html"
         compile $ do
-            --itemFilePath <- getResourceFilePath
-            --
             id         <- getUnderlying
             biblioFile <- getMetadataField id "bibliography"
-            (maybe pandocCompiler (\biblioFileName ->
+            maybe pandocCompiler (\biblioFileName ->
                 pandocBiblioCompiler 
                     "csl/elsevier-with-titles-alphabetical.csl"
                     ("bib" </> biblioFileName <.> "bib")
-                ) biblioFile)
-            -- let fileName = "bib" </> (fromMaybe "default" biblioFile) <.> "bib"
-            -- pandocBiblioCompiler
-            --        "csl/elsevier-with-titles-alphabetical.csl" (fileName)
+                ) biblioFile
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
