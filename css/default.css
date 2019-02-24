@@ -58,7 +58,7 @@ header {
 }
 
 .references {
-  line-height: 0.5rem;
+  line-height: 2.5rem;
 }
 
 .social {
@@ -132,7 +132,7 @@ h1 {
   text-transform: none;
   color: #fff;
   letter-spacing: normal;
-	margin: 1.6rem 0;
+	margin: 3rem 0 -1.6rem;
 }
 
 article .meta {
