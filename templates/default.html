@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="description" content="coding a bit">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>$title$ | Adam Fiedler</title>
+        <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+		<link href="https://fonts.googleapis.com/css?family=Raleway:100" rel="stylesheet" type="text/css">
+		<link href="https://fonts.googleapis.com/css?family=Crimson+Text" rel="stylesheet">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/css/default.css" />
+        <link rel="stylesheet" href="/css/syntax.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <div class="round">
+                    <img src="/images/av.png" alt="Adam Fiedler" />
+                </div>
+                <div class="caption">Adam Fiedler</div>
+            </div>
+            <nav>
+                <a href="/">About</a>
+                <a href="/essays.html">Essays</a>
+            </nav>
+            <div class="social">
+                <a class="em" href="mailto:info@fiedlr.sk"><i class="fa fa-envelope"></i></a>
+                <a class="tw" href="http://twitter.com/fiedlr"><i class="fa fa-twitter"></i></a>
+                <a class="gh" href="http://github.com/fiedlr"><i class="fa fa-github"></i></a>
+            </div>
+        </header>
+
+        <main role="main">
+            <h1>$title$</h1>
+            $body$
+        </main>
+
+        <footer>
+            Published under CC.. &copy; 2019 Adam Fiedler
+
+            <div class="heart">
+                Running with &hearts; on
+                <a href="https://jaspervdj.be/hakyll">Hakyll</a>, <a href="https://github.com/fiedlr/fiedlr">fork me</a>!
+            </div>
+        </footer>
+
+        $if(mathjax)$
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+        $endif$
+    </body>
+</html>
