@@ -250,7 +250,7 @@ article .body {
   }
 }
 
-@media (min-width: 920px) {
+@media (min-width: 920px) and (min-height: 426px) {
   footer {
     text-align: left;
   }
