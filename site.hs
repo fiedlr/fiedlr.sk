@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 import           System.FilePath
 import           Control.Monad
-import           Data.List (intercalate)
+import           Data.List (intercalate, isPrefixOf, isSuffixOf)
 import qualified Data.Map               as M
 import qualified Data.Char              as Char
 import           Hakyll
@@ -80,13 +80,23 @@ pandocCompile mathJax biblioFile =
 capitalizeFirst :: String -> String
 capitalizeFirst s = Char.toUpper (head s) : tail s
 
+removeHTMLExtensions :: Item String -> Compiler (Item String)
+removeHTMLExtensions item = do
+    currentRoute <- getRoute $ itemIdentifier item
+    return $ case currentRoute of
+        Nothing -> item
+        Just _  -> fmap (withUrls remExt) item
+    where hasExt x = "." `isPrefixOf` x && ".html" `isSuffixOf` x
+          remExt x = if hasExt x then take (length x - 5) x else x
+
 categoriesField :: String  
                 -> Tags
                 -> Context a
 categoriesField k tags = field k $ \_ -> renderTags makeLink (intercalate " ") tags
-    where makeLink tag url _ _ _ = renderHtml $
-            H.a ! A.href (toValue url)
-                $ toHtml $ capitalizeFirst tag
+    where makeLink tag _ _ _ _ = renderHtml $
+                                    -- remove index.html
+            H.a ! A.href (toValue $ '/':tag)
+                $ toHtml (capitalizeFirst tag)
 
 main :: IO ()
 main = hakyll $ do
@@ -103,7 +113,7 @@ main = hakyll $ do
     match "bib/*" $ compile biblioCompiler
     match "templates/*" $ compile templateBodyCompiler
 
-    cats <- buildCategories "posts/**" (fromCapture "*.html")
+    cats <- buildCategories "posts/**" (fromCapture "*/index.html")
     let pageCtx = categoriesField "cats" cats <> defaultContext
         postCtx = categoryField "category" cats 
                 <> dateField "date" "%B %e, %Y" <> defaultContext
@@ -119,7 +129,7 @@ main = hakyll $ do
             pandocCompile mathJax biblioFile
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
             >>= loadAndApplyTemplate "templates/default.html" pageCtx
-            >>= relativizeUrls
+            >>= relativizeUrls >>= removeHTMLExtensions
 
     -- Category indices compilation
     tagsRules cats $ \tag pattern -> do
@@ -134,7 +144,7 @@ main = hakyll $ do
             makeItem ""
                 >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
                 >>= loadAndApplyTemplate "templates/default.html" archiveCtx
-                >>= relativizeUrls
+                >>= relativizeUrls >>= removeHTMLExtensions
 
     -- Generate homepage
     match "index.html" $ do
@@ -147,4 +157,4 @@ main = hakyll $ do
             getResourceBody
                 >>= applyAsTemplate indexCtx
                 >>= loadAndApplyTemplate "templates/default.html" indexCtx
-                >>= relativizeUrls
+                >>= relativizeUrls >>= removeHTMLExtensions
