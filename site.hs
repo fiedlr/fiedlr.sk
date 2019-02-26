@@ -105,7 +105,8 @@ main = hakyll $ do
 
     cats <- buildCategories "posts/**" (fromCapture "*.html")
     let pageCtx = categoriesField "cats" cats <> defaultContext
-    let postCtx = categoryField "category" cats <> dateField "date" "%B %e, %Y" <> defaultContext
+        postCtx = categoryField "category" cats 
+                <> dateField "date" "%B %e, %Y" <> defaultContext
 
     -- Post compilation
     match "posts/**" $ do
@@ -126,9 +127,9 @@ main = hakyll $ do
         compile $ do
             posts <- recentFirst =<< loadAll pattern
             let categoryName = capitalizeFirst tag
-                archiveCtx   = listField "posts" postCtx (return posts) <>
-                                constField "title" categoryName          <>
-                                pageCtx
+                archiveCtx   = listField "posts" postCtx (return posts)
+                            <> constField "title" categoryName
+                            <> pageCtx
 
             makeItem ""
                 >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
