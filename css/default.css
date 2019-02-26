@@ -192,7 +192,7 @@ article .body {
   }
 }
 
-@media (min-width: 640px) {
+@media (min-width: 640px) and (min-height: 426px) {
   body {
     width: 100%;
     margin: 0 auto;

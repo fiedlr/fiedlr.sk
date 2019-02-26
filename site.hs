@@ -21,16 +21,15 @@ writerOptions _       = defaultHakyllWriterOptions {
 }
 
 --------------------------------------------------------------------------------
--- Although I've edited the code quite a bit,
--- all thanks go to vjeranc (https://github.com/jaspervdj/hakyll/issues/471)
+addMeta :: String -> MetaValue -> Pandoc -> Pandoc
+addMeta k v (Pandoc (Meta m) a) = Pandoc (Meta $ M.insert k v m) a
 
 addLinkCitations :: Pandoc -> Pandoc
 addLinkCitations = addMeta "link-citations"          (MetaBool True)
                  . addMeta "reference-section-title" (MetaString "References")
 
-addMeta :: String -> MetaValue -> Pandoc -> Pandoc
-addMeta k v (Pandoc (Meta m) a) = Pandoc (Meta $ M.insert k v m) a
-
+-- Although I've edited the code quite a bit,
+-- all thanks go to vjeranc (https://github.com/jaspervdj/hakyll/issues/471)
 readPandocBiblioWithTransform :: ReaderOptions
                               -> Item CSL
                               -> Item Biblio
