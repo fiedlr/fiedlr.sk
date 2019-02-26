@@ -1,7 +1,6 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 import           System.FilePath
-import           Data.Maybe
 import qualified Data.Map               as M
 import           Data.Monoid (mappend)
 import           Hakyll
@@ -15,44 +14,59 @@ writerOptions :: Maybe String -> WriterOptions
 writerOptions Nothing = defaultHakyllWriterOptions 
 writerOptions _       = defaultHakyllWriterOptions {
     writerExtensions = (writerExtensions defaultHakyllWriterOptions) <> extensionsFromList [
-        Ext_tex_math_dollars, Ext_tex_math_double_backslash, Ext_latex_macros
+        Ext_tex_math_dollars, Ext_tex_math_double_backslash, Ext_latex_macros, -- math
+        Ext_backtick_code_blocks, Ext_fenced_code_attributes -- code
     ],
     writerHTMLMathMethod = MathJax ""
 }
 
 --------------------------------------------------------------------------------
--- Courtesy of https://github.com/jaspervdj/hakyll/issues/471
-addLinkCitations (Pandoc meta a) =
-    let prevMap = unMeta meta
-        newMap = M.insert "link-citations" (MetaBool True) 
-               $ M.insert "reference-section-title" (MetaString "References") prevMap
-        newMeta = Meta newMap
-    in  Pandoc newMeta a
+-- Although I've edited the code quite a bit,
+-- all thanks go to vjeranc (https://github.com/jaspervdj/hakyll/issues/471)
 
-readPandocBiblioWithLinks :: ReaderOptions
-                          -> Item CSL
-                          -> Item Biblio
-                          -> Item String
-                          -> Compiler (Item Pandoc)
-readPandocBiblioWithLinks ropt csl biblio item = do
+addLinkCitations :: Pandoc -> Pandoc
+addLinkCitations = addMeta "link-citations"          (MetaBool True)
+                 . addMeta "reference-section-title" (MetaString "References")
+
+addMeta :: String -> MetaValue -> Pandoc -> Pandoc
+addMeta k v (Pandoc (Meta m) a) = Pandoc (Meta $ M.insert k v m) a
+
+readPandocBiblioWithTransform :: ReaderOptions
+                              -> Item CSL
+                              -> Item Biblio
+                              -> (Pandoc -> Pandoc)
+                              -> Item String
+                              -> Compiler (Item Pandoc)
+readPandocBiblioWithTransform ropt csl biblio f item = do
     style <- unsafeCompiler $ CSL.readCSLFile Nothing . toFilePath . itemIdentifier $ csl
 
     let Biblio refs = itemBody biblio
     pandoc <- itemBody <$> readPandocWith ropt item
-    let pandoc' = processCites style refs (addLinkCitations pandoc)
+    let pandoc' = processCites style refs (f pandoc)
 
     return $ fmap (const pandoc') item
 
-pandocBiblioCompilerWith :: ReaderOptions 
-                         -> WriterOptions
-                         -> String 
-                         -> String 
-                         -> Compiler (Item String)
-pandocBiblioCompilerWith ropt wopt cslFileName bibFileName = do
+pandocBiblioCompilerWithTransform :: ReaderOptions -> WriterOptions
+                                  -> String -- CSL FilePath
+                                  -> String -- BIB FilePath
+                                  -> (Pandoc -> Pandoc)
+                                  -> Compiler (Item String)
+pandocBiblioCompilerWithTransform ropt wopt cslFileName bibFileName f = do
     csl <- load $ fromFilePath cslFileName
     bib <- load $ fromFilePath bibFileName
     liftM (writePandocWith wopt)
-        (getResourceBody >>= readPandocBiblioWithLinks ropt csl bib)
+        (getResourceBody >>= readPandocBiblioWithTransform ropt csl bib f)
+
+pandocCompile :: Maybe String -- use Math Jax?
+              -> Maybe String -- use Citations?
+              -> Compiler (Item String)
+pandocCompile mathJax biblioFile = 
+    maybe (pandocCompilerWith defaultHakyllReaderOptions (writerOptions mathJax)) (\biblioFileName ->
+    pandocBiblioCompilerWithTransform defaultHakyllReaderOptions (writerOptions mathJax)
+        "csl/journal-of-mathematical-physics.csl"
+        ("bib" </> biblioFileName <.> "bib")
+        addLinkCitations
+    ) biblioFile
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -79,12 +93,7 @@ main = hakyll $ do
             mathJax    <- getMetadataField id "mathjax"
             biblioFile <- getMetadataField id "bibliography"
             
-            maybe (pandocCompilerWith defaultHakyllReaderOptions (writerOptions mathJax)) (\biblioFileName ->
-                pandocBiblioCompilerWith defaultHakyllReaderOptions (writerOptions mathJax)
-                    "csl/journal-of-mathematical-physics.csl"
-                    ("bib" </> biblioFileName <.> "bib")
-                ) biblioFile
-            
+            pandocCompile mathJax biblioFile
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
