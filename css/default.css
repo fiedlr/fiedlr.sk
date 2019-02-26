@@ -52,7 +52,6 @@ header {
 }
 
 .caption span {
-	font-family: 'Railway', sans-serif;
 	font-size: 0.75em;
 	letter-spacing: 0.33em;
 }
@@ -84,7 +83,6 @@ nav {
 }
 
 nav a {
-  font-family: 'Railway', sans-serif;
   font-size: 1.8rem;
   color: black;
   text-decoration: none;
@@ -111,13 +109,11 @@ a:hover {
 button {
 	display: inline-block;
 	border: 0;
-	font-family: 'Railway', serif;
 	color: #fff;
 }
 
 h1 {
 	margin: 0 0 2rem;
-	font-family: 'Railway', sans-serif;
 	font-weight: bolder;
 	font-size: 2em;
 	color: #4fb9e2;
@@ -126,7 +122,6 @@ h1 {
 }
 
 #bibliography, h2 {
-	font-family: 'Railway', sans-serif;
 	font-weight: normal;
   font-size: 1.5em;
   text-transform: none;
