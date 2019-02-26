@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 import           System.FilePath
 import qualified Data.Map               as M
+import qualified Data.Char              as Char
 import           Data.Monoid (mappend)
 import           Hakyll
 import qualified Text.CSL               as CSL
@@ -60,17 +61,24 @@ pandocCompile :: Maybe String -- use Math Jax?
               -> Maybe String -- use Citations?
               -> Compiler (Item String)
 pandocCompile mathJax biblioFile = 
-    maybe (pandocCompilerWith defaultHakyllReaderOptions (writerOptions mathJax)) (\biblioFileName ->
-    pandocBiblioCompilerWithTransform defaultHakyllReaderOptions (writerOptions mathJax)
-        "csl/journal-of-mathematical-physics.csl"
-        ("bib" </> biblioFileName <.> "bib")
-        addLinkCitations
+    maybe (
+        pandocCompilerWith defaultHakyllReaderOptions (writerOptions mathJax)
+    ) 
+    (\biblioFileName ->
+        pandocBiblioCompilerWithTransform defaultHakyllReaderOptions (writerOptions mathJax)
+            "csl/journal-of-mathematical-physics.csl"
+            ("bib" </> biblioFileName <.> "bib")
+            addLinkCitations
     ) biblioFile
+
+--------------------------------------------------------------------------------
+takeIdentifierBase :: Identifier -> String
+takeIdentifierBase = takeBaseName . toFilePath
 
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyll $ do
-    match (fromList [".htaccess", "browserconfig.xml", "robots.txt", "favicon.ico"])  $ do
+    match (fromList [".htaccess", "browserconfig.xml", "robots.txt", "favicon.ico"]) $ do
         route   idRoute
         compile copyFileCompiler
 
@@ -85,25 +93,33 @@ main = hakyll $ do
     match "csl/*" $ compile cslCompiler
     match "bib/*" $ compile biblioCompiler
 
-    match "posts/*" $ do
-        route   $ setExtension "html"
+    match "templates/*" $ compile templateBodyCompiler
+
+    -- Post compilation
+    match "posts/**" $ do
+        route (gsubRoute "posts/" (const "") `composeRoutes` setExtension ".html")
         compile $ do
-            id         <- getUnderlying
-            mathJax    <- getMetadataField id "mathjax"
-            biblioFile <- getMetadataField id "bibliography"
+            matchId    <- getUnderlying
+            mathJax    <- getMetadataField matchId "mathjax"
+            biblioFile <- getMetadataField matchId "bibliography"
             
             pandocCompile mathJax biblioFile
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
-    create ["essays.html"] $ do
+    -- Category index compilation
+    create ["code.html", "math.html"] $ do
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAll "posts/*"
+            matchId <- getUnderlying
+            let categoryName = takeIdentifierBase matchId
+            posts <-  recentFirst   
+                  =<< (loadAll $ fromGlob $ "posts" </> categoryName </> "*")
+
             let archiveCtx =
-                    listField "posts" postCtx (return posts) <>
-                    constField "title" "Essays"              <>
+                    listField "posts" postCtx (return posts)                                  <>
+                    constField "title" (Char.toUpper (head categoryName) : tail categoryName) <>
                     defaultContext
 
             makeItem ""
@@ -111,11 +127,11 @@ main = hakyll $ do
                 >>= loadAndApplyTemplate "templates/default.html" archiveCtx
                 >>= relativizeUrls
 
-
+    -- Generate homepage
     match "index.html" $ do
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAll "posts/*"
+            posts <- recentFirst =<< loadAll "posts/**"
             let indexCtx =
                     listField "posts" postCtx (return posts) `mappend`
                     defaultContext
@@ -124,8 +140,6 @@ main = hakyll $ do
                 >>= applyAsTemplate indexCtx
                 >>= loadAndApplyTemplate "templates/default.html" indexCtx
                 >>= relativizeUrls
-
-    match "templates/*" $ compile templateBodyCompiler
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
