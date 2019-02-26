@@ -84,7 +84,7 @@ nav {
 
 nav a {
   font-size: 1.8rem;
-  color: black;
+  color: #919191;
   text-decoration: none;
   text-transform: uppercase;
 }
@@ -192,7 +192,7 @@ article .body {
   }
 }
 
-@media (min-width: 640px) and (min-height: 426px) {
+@media (min-width: 726px) and (min-height: 426px) {
   body {
     width: 100%;
     margin: 0 auto;
