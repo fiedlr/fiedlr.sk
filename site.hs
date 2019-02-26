@@ -1,14 +1,19 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 import           System.FilePath
+import           Control.Monad
+import           Data.List (intercalate)
 import qualified Data.Map               as M
 import qualified Data.Char              as Char
-import           Data.Monoid (mappend)
 import           Hakyll
+
 import qualified Text.CSL               as CSL
 import           Text.CSL.Pandoc (processCites)
 import           Text.Pandoc
-import           Control.Monad
+import           Text.Blaze.Html                 (toHtml, toValue, (!))
+import           Text.Blaze.Html.Renderer.String (renderHtml)
+import qualified Text.Blaze.Html5                as H
+import qualified Text.Blaze.Html5.Attributes     as A
 
 --------------------------------------------------------------------------------
 writerOptions :: Maybe String -> WriterOptions
@@ -72,28 +77,34 @@ pandocCompile mathJax biblioFile =
     ) biblioFile
 
 --------------------------------------------------------------------------------
-takeIdentifierBase :: Identifier -> String
-takeIdentifierBase = takeBaseName . toFilePath
+capitalizeFirst :: String -> String
+capitalizeFirst s = Char.toUpper (head s) : tail s
 
---------------------------------------------------------------------------------
+categoriesField :: String  
+                -> Tags
+                -> Context a
+categoriesField k tags = field k $ \_ -> renderTags makeLink (intercalate " ") tags
+    where makeLink tag url _ _ _ = renderHtml $
+            H.a ! A.href (toValue url)
+                $ toHtml $ capitalizeFirst tag
+
 main :: IO ()
 main = hakyll $ do
     match (fromList [".htaccess", "browserconfig.xml", "robots.txt", "favicon.ico"]) $ do
         route   idRoute
         compile copyFileCompiler
-
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
-
     match "css/*" $ do
         route   idRoute
         compile compressCssCompiler
-
     match "csl/*" $ compile cslCompiler
     match "bib/*" $ compile biblioCompiler
-
     match "templates/*" $ compile templateBodyCompiler
+
+    cats <- buildCategories "posts/**" (fromCapture "*.html")
+    let pageCtx = categoriesField "cats" cats <> defaultContext
 
     -- Post compilation
     match "posts/**" $ do
@@ -105,21 +116,18 @@ main = hakyll $ do
             
             pandocCompile mathJax biblioFile
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
-            >>= loadAndApplyTemplate "templates/default.html" postCtx
+            >>= loadAndApplyTemplate "templates/default.html" pageCtx
             >>= relativizeUrls
 
-    -- Category index compilation
-    create ["code.html", "math.html"] $ do
+    -- Category indices compilation
+    tagsRules cats $ \tag pattern -> do
         route idRoute
         compile $ do
-            matchId <- getUnderlying
-            let categoryName = takeIdentifierBase matchId
-            posts <-  recentFirst   
-                  =<< (loadAll $ fromGlob $ "posts" </> categoryName </> "*")
-            let archiveCtx =
-                    listField "posts" postCtx (return posts)                                  <>
-                    constField "title" (Char.toUpper (head categoryName) : tail categoryName) <>
-                    defaultContext
+            posts <- recentFirst =<< loadAll pattern
+            let categoryName = capitalizeFirst tag
+                archiveCtx   = listField "posts" postCtx (return posts) <>
+                                constField "title" categoryName          <>
+                                pageCtx
 
             makeItem ""
                 >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
@@ -131,9 +139,8 @@ main = hakyll $ do
         route idRoute
         compile $ do
             posts <- recentFirst =<< loadAll "posts/**"
-            let indexCtx =
-                    listField "posts" postCtx (return . take 5 posts) `mappend`
-                    defaultContext
+            let indexCtx = listField "posts" postCtx (return $ take 5 posts) 
+                        <> pageCtx
 
             getResourceBody
                 >>= applyAsTemplate indexCtx
