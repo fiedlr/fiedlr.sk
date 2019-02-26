@@ -116,7 +116,6 @@ main = hakyll $ do
             let categoryName = takeIdentifierBase matchId
             posts <-  recentFirst   
                   =<< (loadAll $ fromGlob $ "posts" </> categoryName </> "*")
-
             let archiveCtx =
                     listField "posts" postCtx (return posts)                                  <>
                     constField "title" (Char.toUpper (head categoryName) : tail categoryName) <>
@@ -133,7 +132,7 @@ main = hakyll $ do
         compile $ do
             posts <- recentFirst =<< loadAll "posts/**"
             let indexCtx =
-                    listField "posts" postCtx (return posts) `mappend`
+                    listField "posts" postCtx (return . take 5 posts) `mappend`
                     defaultContext
 
             getResourceBody
