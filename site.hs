@@ -4,6 +4,8 @@ import           System.FilePath
 import           Control.Monad
 import           Data.List (intercalate, isPrefixOf, isSuffixOf)
 import           Data.Either (either)
+import           Data.Binary (Binary)
+import           Data.Typeable
 import qualified Data.Map               as M
 import qualified Data.Char              as Char
 import           Hakyll
@@ -107,6 +109,23 @@ pandocCompile mathJax biblioFile =
             addLinkCitations
     ) biblioFile
 
+loadMaybe :: (Binary a, Typeable a) 
+          => Maybe FilePath
+          -> Compiler (Maybe (Item a))
+loadMaybe Nothing = pure Nothing
+loadMaybe (Just fp) = (load $ fromFilePath fp) >>= pure . Just
+
+pandocRead :: Item CSL
+           -> Maybe (Item Biblio)  -- use Citations ?
+           -> (Item String -> Compiler (Item Pandoc))
+pandocRead _ Nothing = readPandoc
+pandocRead csl (Just bib) = 
+    readPandocBiblioWithTransform 
+        defaultHakyllReaderOptions
+        csl
+        bib
+        addLinkCitations
+
 main :: IO ()
 main = do
     temp <- readFile "template.tex"
@@ -149,7 +168,11 @@ main = do
                 matchId <- getUnderlying
                 body    <- getResourceBody
                 biblio  <- getMetadataField matchId "bibliography"
-                pan     <- readPandoc body
+
+                csl     <- load $ fromFilePath "csl/journal-of-mathematical-physics.csl"
+                bib     <- loadMaybe $ (biblio >>= (\fn -> Just $ "bib" </> fn <.> "bib"))
+                pan     <- (pandocRead csl bib) body
+
                 withItemBody
                     (\p -> unsafeCompiler $ runIOorExplode $ do 
                         either id id <$> makePDF "pdflatex" [] writeLaTeX
