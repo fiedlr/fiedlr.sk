@@ -138,6 +138,13 @@ main = hakyll $ do
             >>= loadAndApplyTemplate "templates/default.html" pageCtx
             >>= relativizeUrls >>= removeHTMLExtensions
 
+    -- TeX pdf compilation
+    match "posts/**" $ do
+        route   $ (gsubRoute "posts/" (const "") `composeRoutes` setExtension ".pdf")
+        compile $ getResourceString >>=
+            withItemBody (unixFilter "pandoc" ["--bibliography=../bib/math-test.bib"]) >>=
+            return . fmap compressCss
+
     -- Category indices compilation
     tagsRules cats $ \tag pattern -> do
         route idRoute
