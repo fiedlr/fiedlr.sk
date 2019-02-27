@@ -26,7 +26,6 @@ writerOptions _       = defaultHakyllWriterOptions {
     writerHTMLMathMethod = MathJax ""
 }
 
---------------------------------------------------------------------------------
 addMeta :: String -> MetaValue -> Pandoc -> Pandoc
 addMeta k v (Pandoc (Meta m) a) = Pandoc (Meta $ M.insert k v m) a
 
@@ -34,6 +33,10 @@ addLinkCitations :: Pandoc -> Pandoc
 addLinkCitations = addMeta "link-citations"          (MetaBool True)
                  . addMeta "reference-section-title" (MetaString "References")
 
+capitalizeFirst :: String -> String
+capitalizeFirst s = Char.toUpper (head s) : tail s
+
+--------------------------------------------------------------------------------
 -- Although I've edited the code quite a bit,
 -- all thanks go to vjeranc (https://github.com/jaspervdj/hakyll/issues/471)
 readPandocBiblioWithTransform :: ReaderOptions
@@ -62,7 +65,33 @@ pandocBiblioCompilerWithTransform ropt wopt cslFileName bibFileName f = do
     liftM (writePandocWith wopt)
         (getResourceBody >>= readPandocBiblioWithTransform ropt csl bib f)
 
-pandocCompile :: Maybe String -- use Math Jax?
+--------------------------------------------------------------------------------
+-- Inspired by renderTagList
+-- (https://jaspervdj.be/hakyll/reference/src/Hakyll.Web.Tags.html#renderTagList)
+categoriesField :: String  
+                -> Tags
+                -> Context a
+categoriesField k tags = field k $ \_ -> renderTags makeLink (intercalate " ") tags
+    where makeLink tag _ _ _ _ = renderHtml $
+                                    -- remove index.html
+            H.a ! A.href (toValue $ '/':tag)
+                $ toHtml (capitalizeFirst tag)
+
+--------------------------------------------------------------------------------  
+-- Inspired by relativizeUrls, relativizeUrlsWith
+-- (https://jaspervdj.be/hakyll/reference/src/Hakyll.Web.Html.RelativizeUrls.html#relativizeUrlsWith)
+removeHTMLExtensions :: Item String -> Compiler (Item String)
+removeHTMLExtensions item = do
+    currentRoute <- getRoute $ itemIdentifier item
+    return $ case currentRoute of
+        Nothing -> item
+        Just _  -> fmap (withUrls remExt) item
+          -- is relative?
+    where hasExt x = "." `isPrefixOf` x && ".html" `isSuffixOf` x
+          remExt x = if hasExt x then take (length x - 5) x else x
+
+--------------------------------------------------------------------------------
+pandocCompile :: Maybe String -- use MathJax?
               -> Maybe String -- use Citations?
               -> Compiler (Item String)
 pandocCompile mathJax biblioFile = 
@@ -75,28 +104,6 @@ pandocCompile mathJax biblioFile =
             ("bib" </> biblioFileName <.> "bib")
             addLinkCitations
     ) biblioFile
-
---------------------------------------------------------------------------------
-capitalizeFirst :: String -> String
-capitalizeFirst s = Char.toUpper (head s) : tail s
-
-removeHTMLExtensions :: Item String -> Compiler (Item String)
-removeHTMLExtensions item = do
-    currentRoute <- getRoute $ itemIdentifier item
-    return $ case currentRoute of
-        Nothing -> item
-        Just _  -> fmap (withUrls remExt) item
-    where hasExt x = "." `isPrefixOf` x && ".html" `isSuffixOf` x
-          remExt x = if hasExt x then take (length x - 5) x else x
-
-categoriesField :: String  
-                -> Tags
-                -> Context a
-categoriesField k tags = field k $ \_ -> renderTags makeLink (intercalate " ") tags
-    where makeLink tag _ _ _ _ = renderHtml $
-                                    -- remove index.html
-            H.a ! A.href (toValue $ '/':tag)
-                $ toHtml (capitalizeFirst tag)
 
 main :: IO ()
 main = hakyll $ do
