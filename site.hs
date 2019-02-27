@@ -3,6 +3,7 @@
 import           System.FilePath
 import           Control.Monad
 import           Data.List (intercalate, isPrefixOf, isSuffixOf)
+import           Data.Either (either)
 import qualified Data.Map               as M
 import qualified Data.Char              as Char
 import           Hakyll
@@ -10,6 +11,7 @@ import           Hakyll
 import qualified Text.CSL               as CSL
 import           Text.CSL.Pandoc (processCites)
 import           Text.Pandoc
+import           Text.Pandoc.PDF (makePDF)      
 import           Text.Blaze.Html                 (toHtml, toValue, (!))
 import           Text.Blaze.Html.Renderer.String (renderHtml)
 import qualified Text.Blaze.Html5                as H
@@ -106,69 +108,79 @@ pandocCompile mathJax biblioFile =
     ) biblioFile
 
 main :: IO ()
-main = hakyll $ do
-    match (fromList [".htaccess", "browserconfig.xml", "robots.txt", "favicon.ico"]) $ do
-        route   idRoute
-        compile copyFileCompiler
-    match "images/*" $ do
-        route   idRoute
-        compile copyFileCompiler
-    match "css/*" $ do
-        route   idRoute
-        compile compressCssCompiler
-    match "csl/*" $ compile cslCompiler
-    match "bib/*" $ compile biblioCompiler
-    match "templates/*" $ compile templateBodyCompiler
+main = do
+    temp <- readFile "template.tex"
+    hakyll $ do
+        match (fromList [".htaccess", "browserconfig.xml", "robots.txt", "favicon.ico"]) $ do
+            route   idRoute
+            compile copyFileCompiler
+        match "images/*" $ do
+            route   idRoute
+            compile copyFileCompiler
+        match "css/*" $ do
+            route   idRoute
+            compile compressCssCompiler
+        match "csl/*" $ compile cslCompiler
+        match "bib/*" $ compile biblioCompiler
+        match "templates/*" $ compile templateBodyCompiler
 
-    cats <- buildCategories "posts/**" (fromCapture "*/index.html")
-    let pageCtx = categoriesField "cats" cats <> defaultContext
-        postCtx = categoryField "category" cats 
-                <> dateField "date" "%B %e, %Y" <> defaultContext
+        cats <- buildCategories "posts/**" (fromCapture "*/index.html")
+        let pageCtx = categoriesField "cats" cats <> defaultContext
+            postCtx = categoryField "category" cats 
+                    <> dateField "date" "%B %e, %Y" <> defaultContext
 
-    -- Post compilation
-    match "posts/**" $ do
-        route (gsubRoute "posts/" (const "") `composeRoutes` setExtension ".html")
-        compile $ do
-            matchId    <- getUnderlying
-            mathJax    <- getMetadataField matchId "mathjax"
-            biblioFile <- getMetadataField matchId "bibliography"
-            
-            pandocCompile mathJax biblioFile
-            >>= loadAndApplyTemplate "templates/post.html"    postCtx
-            >>= loadAndApplyTemplate "templates/default.html" pageCtx
-            >>= relativizeUrls >>= removeHTMLExtensions
+        -- Post compilation
+        match "posts/**" $ do
+            route $ gsubRoute "posts/" (const "") `composeRoutes` setExtension ".html"
+            compile $ do
+                matchId    <- getUnderlying
+                mathJax    <- getMetadataField matchId "mathjax"
+                biblioFile <- getMetadataField matchId "bibliography"
+                
+                pandocCompile mathJax biblioFile
+                >>= loadAndApplyTemplate "templates/post.html"    postCtx
+                >>= loadAndApplyTemplate "templates/default.html" pageCtx
+                >>= relativizeUrls >>= removeHTMLExtensions
 
-    -- TeX pdf compilation
-    match "posts/**" $ do
-        route   $ (gsubRoute "posts/" (const "") `composeRoutes` setExtension ".pdf")
-        compile $ getResourceString >>=
-            withItemBody (unixFilter "pandoc" ["--bibliography=../bib/math-test.bib"]) >>=
-            return . fmap compressCss
+        -- TeX pdf compilation
+        match "posts/**.tex" $ version "pdf" $ do
+            route   $ gsubRoute "posts/" (const "") `composeRoutes` setExtension ".pdf" 
+            compile $ do   
+                matchId <- getUnderlying
+                body    <- getResourceBody
+                biblio  <- getMetadataField matchId "bibliography"
+                pan     <- readPandoc body
+                withItemBody
+                    (\p -> unsafeCompiler $ runIOorExplode $ do 
+                        either id id <$> makePDF "pdflatex" [] writeLaTeX
+                            defaultHakyllWriterOptions { writerTemplate = Just temp }
+                            p
+                    ) pan
 
-    -- Category indices compilation
-    tagsRules cats $ \tag pattern -> do
-        route idRoute
-        compile $ do
-            posts <- recentFirst =<< loadAll pattern
-            let categoryName = capitalizeFirst tag
-                archiveCtx   = listField "posts" postCtx (return posts)
-                            <> constField "title" categoryName
+        -- Category indices compilation
+        tagsRules cats $ \tag pattern -> do
+            route idRoute
+            compile $ do
+                posts <- recentFirst =<< loadAll (pattern .&&. hasNoVersion)
+                let categoryName = capitalizeFirst tag
+                    archiveCtx   = listField "posts" postCtx (return posts)
+                                <> constField "title" categoryName
+                                <> pageCtx
+
+                makeItem ""
+                    >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
+                    >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+                    >>= relativizeUrls >>= removeHTMLExtensions
+
+        -- Generate homepage
+        match "index.html" $ do
+            route idRoute
+            compile $ do
+                posts <- recentFirst =<< loadAll ("posts/**" .&&. hasNoVersion)
+                let indexCtx = listField "posts" postCtx (return $ take 5 posts) 
                             <> pageCtx
 
-            makeItem ""
-                >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
-                >>= loadAndApplyTemplate "templates/default.html" archiveCtx
-                >>= relativizeUrls >>= removeHTMLExtensions
-
-    -- Generate homepage
-    match "index.html" $ do
-        route idRoute
-        compile $ do
-            posts <- recentFirst =<< loadAll "posts/**"
-            let indexCtx = listField "posts" postCtx (return $ take 5 posts) 
-                        <> pageCtx
-
-            getResourceBody
-                >>= applyAsTemplate indexCtx
-                >>= loadAndApplyTemplate "templates/default.html" indexCtx
-                >>= relativizeUrls >>= removeHTMLExtensions
+                getResourceBody
+                    >>= applyAsTemplate indexCtx
+                    >>= loadAndApplyTemplate "templates/default.html" indexCtx
+                    >>= relativizeUrls >>= removeHTMLExtensions
