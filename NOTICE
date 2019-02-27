@@ -1,4 +1,6 @@
 Copyright 2019 Adam Fiedler <info@fiedlr.sk>.
 All rights reserved for any bundled post, image and stylesheet, except where explicitly stated otherwise.
 
+This product includes modified portions of Hakyll developed by Jasper Van der Jeugt, which is available under a "BSD" license. For details, see <https://github.com/jaspervdj/hakyll/blob/master/LICENSE>.
+
 This product bundles a Citation Style Language citation style "Journal of Mathematical Physics" developed at Zotero <https://www.zotero.org/styles>, which is available under a "Creative Commons Attribution-ShareAlike 3.0" license. For details, see csl/journal-of-mathematical-physics.csl.
