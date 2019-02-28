@@ -6,6 +6,7 @@ import           Data.List (intercalate, isPrefixOf, isSuffixOf)
 import           Data.Either (either)
 import           Data.Binary (Binary)
 import           Data.Typeable
+import           Data.Maybe (fromJust, isJust)
 import qualified Data.Map               as M
 import qualified Data.Char              as Char
 import           Hakyll
@@ -92,7 +93,7 @@ removeHTMLExtensions item = do
         Just _  -> fmap (withUrls remExt) item
           -- is relative?
     where hasExt x = "." `isPrefixOf` x && ".html" `isSuffixOf` x
-          remExt x = if hasExt x then take (length x - 5) x else x
+          remExt x = if hasExt x then dropExtension x else x
 
 --------------------------------------------------------------------------------
 pandocCompile :: Maybe String -- use MathJax?
@@ -153,13 +154,21 @@ main = do
             route $ gsubRoute "posts/" (const "") `composeRoutes` setExtension ".html"
             compile $ do
                 matchId    <- getUnderlying
+                matchExt   <- getUnderlyingExtension
+                matchUrl   <- getRoute matchId
                 mathJax    <- getMetadataField matchId "mathjax"
                 biblioFile <- getMetadataField matchId "bibliography"
-                
-                pandocCompile mathJax biblioFile
-                >>= loadAndApplyTemplate "templates/post.html"    postCtx
-                >>= loadAndApplyTemplate "templates/default.html" pageCtx
-                >>= relativizeUrls >>= removeHTMLExtensions
+
+                let pageCtx' = if matchExt == ".tex" && isJust matchUrl
+                               then constField "pdf" (
+                                   dropExtension (fromJust matchUrl) ++ ".pdf"
+                               ) <> pageCtx
+                               else pageCtx
+                            in
+                    (pandocCompile mathJax biblioFile
+                    >>= loadAndApplyTemplate "templates/post.html"    postCtx
+                    >>= loadAndApplyTemplate "templates/default.html" pageCtx'
+                    >>= relativizeUrls >>= removeHTMLExtensions)
 
         -- TeX pdf compilation
         match "posts/**.tex" $ version "pdf" $ do

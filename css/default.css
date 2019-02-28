@@ -65,6 +65,18 @@ header {
   line-height: 2.5rem;
 }
 
+.pdf {
+  display: inline-block; padding: 0.1em 0.4em; background: #e67360; color: #fff; border-radius: 10%; text-transform: none; text-decoration: none; font-weight: bold; font-size: 0.7em;
+  vertical-align: 0.7em;
+}
+
+.pdf:hover {
+  background: #fff;
+  color: #e67360;
+  -webkit-transition: background-color 300ms; 
+  transition: background-color 300ms;
+}
+
 .social {
   padding-bottom: 1rem;
 }
