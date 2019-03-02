@@ -146,7 +146,8 @@ main = do
 
         cats <- buildCategories "posts/**" (fromCapture "*/index.html")
         let pageCtx = categoriesField "cats" cats <> defaultContext
-            postCtx = categoryField "category" cats 
+            postCtx = mapContext (capitalizeFirst . dropExtension) 
+                    $ categoryField "category" cats 
                     <> dateField "date" "%B %e, %Y" <> defaultContext
 
         -- Post compilation
