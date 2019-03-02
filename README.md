@@ -14,7 +14,7 @@ Here's the list of key things to me that I haven't found in Hakyll and managed t
   - you need to set `.numberLines` class in the snippet attribute section (\`\`\`\{.numberLines\})
 - post categories based on `posts` dir structure (thanks to [https://jaspervdj.be/hakyll/reference/Hakyll-Web-Tags.html](Hakyll tags)),
   - `$categories$` renders links to all the existing categories,
-  - `$category` is capitalized,
+  - `$category$` is capitalized,
 - no `posts/` URL prefix for post entries,
 - `removeHTMLExtensions` filter can be used to remove '.html' extension from relative links,
   - use if you want nice URLs without messing with the routes (e.g. you have set up *mod_redirect* in `.htaccess`).
