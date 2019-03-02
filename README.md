@@ -2,9 +2,9 @@ This is the source code for [my personal webpage](http://fiedlr.sk/).
 
 The webpage falls under regular copyright laws and its code is available here only _as a reference_. This means you should NOT use it as a template for another website. Check [Hakyll's website](https://jaspervdj.be/hakyll) for better examples.
 
-Here's the list of key things to me that I haven't found in Hakyll and managed to get working only after a few days of research and hard work (I know it might not seem so).
-
 # Features
+
+Here's the list of key things to me that I haven't found in Hakyll and managed to get working only after a few days of research and hard work (I know it might not seem so).
 
 - Automatic **PDF generation** for tex files using _Pandoc API_ itself (no ugly wrappers),
   - reserves `$pdf$` field for the link-to-file if the pdf file exists,
