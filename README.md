@@ -12,7 +12,7 @@ Here's the list of key things to me that I haven't found in Hakyll and managed t
 - nice math rendering with _MathJax_ (you need to set `$mathjax$` to true in post metadata to make it load),
 - code snippets with syntax highlighting and linkable _line numbering_,
   - you need to set `.numberLines` class in the snippet attribute section (\`\`\`\{.numberLines\})
-- post categories based on `posts` dir structure (thanks to [https://jaspervdj.be/hakyll/reference/Hakyll-Web-Tags.html](Hakyll tags)),
+- post categories based on `posts` dir structure (thanks to [Hakyll tags](https://jaspervdj.be/hakyll/reference/Hakyll-Web-Tags.html)),
   - `$categories$` renders links to all the existing categories,
   - `$category$` is capitalized,
 - no `posts/` URL prefix for post entries,
