@@ -131,13 +131,16 @@ button {
 	color: #fff;
 }
 
+.title {
+  margin: 0 0 2rem;
+}
+
 h1 {
-	margin: 0 0 2rem;
 	font-weight: bolder;
 	font-size: 2em;
 	color: #4fb9e2;
-	text-transform: uppercase;
-	letter-spacing: 0.2em;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
 }
 
 ul {
