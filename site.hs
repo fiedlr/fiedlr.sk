@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 import           System.FilePath
 import           Control.Monad
-import           Data.List (intercalate, isPrefixOf, isSuffixOf)
+import           Data.List (intercalate, intersperse, isPrefixOf, isSuffixOf)
 import           Data.Either (either)
 import           Data.Binary (Binary)
 import           Data.Typeable
@@ -19,6 +19,9 @@ import           Text.Blaze.Html                 (toHtml, toValue, (!))
 import           Text.Blaze.Html.Renderer.String (renderHtml)
 import qualified Text.Blaze.Html5                as H
 import qualified Text.Blaze.Html5.Attributes     as A
+
+cslTemplate :: String
+cslTemplate = "default"
 
 --------------------------------------------------------------------------------
 writerOptions :: Maybe String -> WriterOptions
@@ -77,10 +80,20 @@ categoriesField :: String
                 -> Tags
                 -> Context a
 categoriesField k tags = field k $ \_ -> renderTags makeLink (intercalate " ") tags
-    where makeLink tag _ _ _ _ = renderHtml $
-                                    -- remove index.html
-            H.a ! A.href (toValue $ '/':tag)
-                $ toHtml (capitalizeFirst tag)
+    where makeLink tag _ _ _ _ = renderHtml (fromJust $ simpleRenderCatLink tag Nothing)
+
+-- Inspired by categoryField
+-- (https://jaspervdj.be/hakyll/reference/src/Hakyll.Web.Tags.html#categoryField)
+categoryField' :: String     -- ^ Destination key
+               -> Tags       -- ^ Tags
+               -> Context a  -- ^ Context
+categoryField' = tagsFieldWith getCategory simpleRenderCatLink (mconcat . intersperse ", ")
+    where getCategory = return . return . takeBaseName . takeDirectory . toFilePath
+
+-- Inspired by simpleRenderLink
+-- (https://jaspervdj.be/hakyll/reference/src/Hakyll.Web.Tags.html#simpleRenderLink)   
+simpleRenderCatLink :: String -> Maybe FilePath -> Maybe H.Html
+simpleRenderCatLink tag _ = Just $ H.a ! A.href (toValue $ '/':tag) $ toHtml (capitalizeFirst tag)
 
 --------------------------------------------------------------------------------  
 -- Inspired by relativizeUrls, relativizeUrlsWith
@@ -105,7 +118,7 @@ pandocCompile mathJax biblioFile =
     ) 
     (\biblioFileName ->
         pandocBiblioCompilerWithTransform defaultHakyllReaderOptions (writerOptions mathJax)
-            "csl/journal-of-mathematical-physics.csl"
+            ("csl" </> cslTemplate <.> "csl")
             ("bib" </> biblioFileName <.> "bib")
             addLinkCitations
     ) biblioFile
@@ -146,8 +159,7 @@ main = do
 
         cats <- buildCategories "posts/**" (fromCapture "*/index.html")
         let pageCtx = categoriesField "cats" cats <> defaultContext
-            postCtx = mapContext (capitalizeFirst . dropExtension) 
-                    $ categoryField "category" cats 
+            postCtx =  categoryField' "category" cats
                     <> dateField "date" "%B %e, %Y" <> defaultContext
 
         -- Post compilation
@@ -179,7 +191,7 @@ main = do
                 body    <- getResourceBody
                 biblio  <- getMetadataField matchId "bibliography"
 
-                csl     <- load $ fromFilePath "csl/journal-of-mathematical-physics.csl"
+                csl     <- load $ fromFilePath $ "csl" </> cslTemplate <.> "csl"
                 bib     <- loadMaybe $ (biblio >>= (\fn -> Just $ "bib" </> fn <.> "bib"))
                 pan     <- (pandocRead csl bib) body
 

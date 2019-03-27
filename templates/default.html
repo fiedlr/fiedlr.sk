@@ -39,10 +39,12 @@
 
         <main role="main">
             <div>
-                <h1 style="display: inline-block;">$title$</h1>
-                $if(pdf)$
-                    <a href="/$pdf$" class="pdf" title="Save as PDF" rel="print">PDF</a>
-                $endif$
+                <h1 style="display: inline-block;">
+                    $title$
+                    $if(pdf)$
+                        <a href="/$pdf$" class="pdf" title="Save as PDF" rel="print">PDF</a>
+                    $endif$
+                </h1>
             </div>
             $body$
         </main>
