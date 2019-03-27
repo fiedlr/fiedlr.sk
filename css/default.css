@@ -63,6 +63,7 @@ header {
 .references {
   margin-top: -2rem;
   line-height: 2.5rem;
+  overflow-wrap: break-word;
 }
 
 .pdf {
