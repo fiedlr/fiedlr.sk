@@ -1,6 +1,7 @@
 .*
 _*
 site
+*.csl
 
 !.htaccess
 !.gitignore
