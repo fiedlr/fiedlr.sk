@@ -6,3 +6,7 @@ syntax.css
 
 !.htaccess
 !.gitignore
+
+% testing folders
+posts/math
+posts/code
