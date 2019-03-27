@@ -8,7 +8,7 @@ Here's the list of key things to me that I haven't found in Hakyll and managed t
 
 - Automatic **PDF generation** for tex files using _Pandoc API_ itself (no ugly wrappers),
   - reserves `$pdf$` field for the link-to-file if the pdf file exists,
-- working bibtex citations (you need to set $bibliography$ in post metadata to point to the bib file) with _clickable_ links and a 'References' section title before the rendered bibliography,
+- working bibtex citations (you need to set `$bibliography$` in post metadata to point to the bib file) with _clickable_ links and a 'References' section title before the rendered bibliography,
 - nice math rendering with _MathJax_ (you need to set `$mathjax$` to true in post metadata to make it load),
 - code snippets with syntax highlighting and linkable _line numbering_,
   - you need to set `.numberLines` class in the snippet attribute section (\`\`\`\{.numberLines\})
