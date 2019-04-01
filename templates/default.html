@@ -1,63 +1,64 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        $if(author)$
-        <meta name="author" content="$author$">
-        $endif$
-        <title>$title$ | Adam Fiedler</title>
-        <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
-		<link href="https://fonts.googleapis.com/css?family=Raleway:100" rel="stylesheet" type="text/css">
-		<link href="https://fonts.googleapis.com/css?family=Crimson+Text" rel="stylesheet">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="/css/default.css" />
-        <link rel="stylesheet" href="/css/syntax.css" />
-        <!--[if lt IE 9]>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
-        <![endif]-->
-    </head>
-    <body>
-        <header>
-            <div class="logo">
-                <div class="round">
-                    <img src="/images/av.png" alt="Adam Fiedler" />
-                </div>
-                <div class="caption">Adam Fiedler</div>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    $if(author)$
+    <meta name="author" content="$author$">
+    $endif$
+    <title>$title$ | Adam Fiedler</title>
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Raleway:100">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Crimson+Text">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/default.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
+    $if(pdf)$
+    <link rel="alternate" type="application/pdf" media="print" href="/$pdf$">
+    $endif$
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="round">
+                <img src="/images/av.png" alt="Adam Fiedler">
             </div>
-            <nav>
-                <a href="/">About</a>
-                $cats$
-            </nav>
-            <div class="social">
-                <a class="em" href="mailto:info@fiedlr.sk"><i class="fa fa-envelope"></i></a>
-                <a class="tw" href="http://twitter.com/fiedlr"><i class="fa fa-twitter"></i></a>
-                <a class="gh" href="http://github.com/fiedlr"><i class="fa fa-github"></i></a>
-            </div>
-        </header>
-
-        <main role="main">
-            <div class="title">
-                <h1 style="display: inline;">$title$</h1>
-                $if(pdf)$
-                    <a href="/$pdf$" class="pdf" title="Save as PDF" rel="print">PDF</a>
-                $endif$
-            </div>
-            $body$
-        </main>
-
-        <footer>
-            Adam Fiedler &copy; 2019
-
-            <div class="heart">
-                Running with &hearts; on
-                <a href="https://jaspervdj.be/hakyll">Hakyll</a>.
-            </div>
-        </footer>
-
-        $if(mathjax)$
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
-        $endif$
-    </body>
+            <div class="caption">Adam Fiedler</div>
+        </div>
+        <nav>
+            <a href="/">About</a>
+            $cats$
+        </nav>
+        <div class="social">
+            <a class="em" href="mailto:info@fiedlr.sk"><i class="fa fa-envelope"></i></a>
+            <a class="tw" href="https://twitter.com/fiedlr"><i class="fa fa-twitter"></i></a>
+            <a class="gh" href="https://github.com/fiedlr"><i class="fa fa-github"></i></a>
+        </div>
+    </header>
+    <main role="main">
+        <div class="title">
+            <h1 style="display: inline;">$title$</h1>
+            $if(pdf)$
+            <a href="/$pdf$" rel="print" title="Save as PDF" class="pdf">
+                <i class="fa fa-print"></i>
+            </a>
+            $endif$
+        </div>
+        $body$
+    </main>
+    <footer>
+        &copy; Adam Fiedler 2019
+        <div class="heart">
+            Running with &hearts; on
+            <a href="https://jaspervdj.be/hakyll">Hakyll</a>. Here's the <a href="https://github.com/fiedlr/fiedlr">source</a>.
+        </div>
+    </footer>
+    $if(mathjax)$
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+    $endif$
+</body>
 </html>
