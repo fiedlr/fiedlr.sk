@@ -8,6 +8,11 @@
     <meta name="author" content="$author$">
     $endif$
     <title>$title$ | Adam Fiedler</title>
+    <meta property="og:title" content="$title$">
+    <meta property="og:type" content="article">
+    <meta property="og:article:author" content="Adam Fiedler">
+    <meta property="og:url" content="http://fiedlr.sk$url$">
+    <meta property="og:image" content="http://fiedlr.sk/images/tile.png">
     <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Raleway:100">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Crimson+Text">
@@ -36,12 +41,13 @@
         <div class="social">
             <a class="em" href="mailto:info@fiedlr.sk"><i class="fa fa-envelope"></i></a>
             <a class="tw" href="https://twitter.com/fiedlr"><i class="fa fa-twitter"></i></a>
+            <a class="li" href="https://linkedin.com/in/fiedlr"><i class="fa fa-linkedin"></i></a>
             <a class="gh" href="https://github.com/fiedlr"><i class="fa fa-github"></i></a>
         </div>
     </header>
     <main role="main">
         <div class="title">
-            <h1 style="display: inline;">$title$</h1>
+            <h1>$title$</h1>
             $if(pdf)$
             <a href="/$pdf$" rel="print" title="Save as PDF" class="pdf">
                 <i class="fa fa-print"></i>

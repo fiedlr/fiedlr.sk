@@ -90,10 +90,12 @@ header {
 .tw { background: #55acee; }
 .gh { background: #000; }
 .so { background: #F48024; }
+.li { background: #2773b0; }
 .em:hover > .fa-envelope { color: #e67360; }
 .tw:hover > .fa-twitter { color: #55acee; }
 .gh:hover > .fa-github { color: #000; }
 .so:hover > .fa-stack-overflow { color: #F48024; }
+.li:hover > .fa-linkedin { color: #2773b0; }
 
 nav {
   text-align: center;
@@ -132,11 +134,16 @@ button {
 	color: #fff;
 }
 
+h1 {
+  margin: 3rem 0 0rem;
+}
+
 .title {
   margin: 0 0 2rem;
 }
 
-h1 {
+.title h1 {
+  display: inline;
 	font-weight: bolder;
 	font-size: 2em;
 	color: #4fb9e2;
