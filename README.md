@@ -17,4 +17,6 @@ Here's the list of key things to me that I haven't found in Hakyll and managed t
   - `$category$` is capitalized,
 - no `posts/` URL prefix for post entries,
 - `removeHTMLExtensions` filter can be used to remove '.html' extension from relative links,
-  - use if you want nice URLs without messing with the routes (e.g. you have set up *mod_redirect* in `.htaccess`).
+  - use if you want nice URLs without messing with the routes (e.g. you have set up *mod_redirect* in `.htaccess`),
+- `numbersections: true` in the YAML block *enables* section numbering from LaTeX sources (unlike unmodified Hakyll),
+- for internal links in LaTeX sources use the standard `\label{id}` with `\protect\hyperlink{id}{link name}` (`\ref` does not work).

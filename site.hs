@@ -26,10 +26,12 @@ cslTemplate = "default"
 --------------------------------------------------------------------------------
 writerOptions :: Maybe String -> WriterOptions
 writerOptions Nothing = defaultHakyllWriterOptions 
-writerOptions _       = defaultHakyllWriterOptions {
+writerOptions _  = defaultHakyllWriterOptions {
     writerExtensions = (writerExtensions defaultHakyllWriterOptions) <> extensionsFromList [
         Ext_tex_math_dollars, Ext_tex_math_double_backslash, Ext_latex_macros, -- math
-        Ext_backtick_code_blocks, Ext_fenced_code_attributes -- code
+        Ext_backtick_code_blocks, Ext_fenced_code_attributes, -- code
+        Ext_auto_identifiers, -- references
+        Ext_yaml_metadata_block -- additional support for metadata
     ],
     writerHTMLMathMethod = MathJax ""
 }
@@ -111,13 +113,16 @@ removeHTMLExtensions item = do
 --------------------------------------------------------------------------------
 pandocCompile :: Maybe String -- use MathJax?
               -> Maybe String -- use Citations?
+              -> Maybe String -- number sections?
               -> Compiler (Item String)
-pandocCompile mathJax biblioFile = 
+pandocCompile mathJax biblioFile nsecs = 
     maybe (
-        pandocCompilerWith defaultHakyllReaderOptions (writerOptions mathJax)
+        pandocCompilerWith defaultHakyllReaderOptions 
+        ((writerOptions mathJax) { writerNumberSections = isJust nsecs })
     ) 
     (\biblioFileName ->
-        pandocBiblioCompilerWithTransform defaultHakyllReaderOptions (writerOptions mathJax)
+        pandocBiblioCompilerWithTransform defaultHakyllReaderOptions 
+            ((writerOptions mathJax) { writerNumberSections = isJust nsecs })
             ("csl" </> cslTemplate <.> "csl")
             ("bib" </> biblioFileName <.> "bib")
             addLinkCitations
@@ -171,6 +176,7 @@ main = do
                 matchUrl   <- getRoute matchId
                 mathJax    <- getMetadataField matchId "mathjax"
                 biblioFile <- getMetadataField matchId "bibliography"
+                nsecs      <- getMetadataField matchId "numbersections"
 
                 let pageCtx' = if matchExt == ".tex" && isJust matchUrl
                                then constField "pdf" (
@@ -178,7 +184,7 @@ main = do
                                ) <> pageCtx
                                else pageCtx
                             in
-                    (pandocCompile mathJax biblioFile
+                    (pandocCompile mathJax biblioFile nsecs
                     >>= loadAndApplyTemplate "templates/post.html"    postCtx
                     >>= loadAndApplyTemplate "templates/default.html" pageCtx'
                     >>= relativizeUrls >>= removeHTMLExtensions)
@@ -190,6 +196,7 @@ main = do
                 matchId <- getUnderlying
                 body    <- getResourceBody
                 biblio  <- getMetadataField matchId "bibliography"
+                nsecs   <- getMetadataField matchId "numbersections"
 
                 csl     <- load $ fromFilePath $ "csl" </> cslTemplate <.> "csl"
                 bib     <- loadMaybe $ (biblio >>= (\fn -> Just $ "bib" </> fn <.> "bib"))
@@ -198,7 +205,10 @@ main = do
                 withItemBody
                     (\p -> unsafeCompiler $ runIOorExplode $ do 
                         either id id <$> makePDF "pdflatex" [] writeLaTeX
-                            defaultHakyllWriterOptions { writerTemplate = Just temp }
+                            defaultHakyllWriterOptions { 
+                                writerTemplate = Just temp,
+                                writerNumberSections = isJust nsecs
+                            }
                             p
                     ) pan
 
