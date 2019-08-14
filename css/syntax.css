@@ -2,6 +2,8 @@ code { white-space: pre-wrap;}
 span.smallcaps { font-variant: small-caps; }
 span.underline { text-decoration: underline; }
 div.column { display: inline-block; vertical-align: top; width: 50%; }
+a.sourceLine { padding: 0 0 0 10px; }
+.numberLines a.sourceLine { padding: 0; }
 
 a.sourceLine { display: inline-block; line-height: 1.2; font-size: 1em; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
