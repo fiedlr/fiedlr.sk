@@ -1,6 +1,7 @@
 ---
 title: Is JavaScript ready for pure modules?
 author: Adam Fiedler
+modified: true
 ---
 
 Functional programming (FP) is not new to JavaScript.
@@ -84,10 +85,10 @@ const remOf5 = flip(modCounter)(5)
 
 where `remOf5(x)` really calculates the remainder after dividing `5` by `x`.
 
-What if we want to use uncarried functions as carried or vice versa?
+What if we want to use uncurried functions as curried or vice versa?
 There are numerous solutions out there already.
-All in all, a `carry` function is not that difficult to define ourselves in modern JS, actually it is not that difficult to make it work for functions with any fixed number of parameters.
-This is a feature that would be really handy in JS, as it is common practice to have uncarried functions with more than two arguments.
+All in all, a `curry` function is not that difficult to define ourselves in modern JS, actually it is not that difficult to make it work for functions with any fixed number of parameters.
+This is a feature that would be really handy in JS, as it is common practice to have uncurried functions with more than two arguments.
 Consider the following example
 
 ```{.haskell .numberLines .line-anchors startFrom="1"}
@@ -112,6 +113,36 @@ const uncurrify = f =>
 
 It again works for any function with a fixed number of arguments. Curried arrow functions in JS cannot be polyvariadic by definition.
 
+## `let ... in ...` expressions
+
+For pure modules to be usable, we need a way how to save interim results within expressions themselves.
+This is obviously important not only for saving ourselves the trouble to copy and paste the same subexpressions over and over again.
+We have to take into account that the compiler has no way of knowing that it can *cache* the results.
+
+In Haskell, one uses `let ... in ...` expressions or `where` control blocks to achieve this.  
+We're again lucky in this arena.
+Although arguably not as convenient to use, Immediately Invoked Function Expressions (IIFE) are able to emulate `let`s in the pure modules world as long as we do not need anything else that we could expect of `let`s. 
+
+A quick detour just to demonstrate this fact (you can skip safely skip this). 
+In Haskell, `let` ... `in` ... are expressions and not control structures such as `where` because they can be used exactly as any other expressions.
+Therefore, if we have an expression of the form 
+```haskell 
+5 + (let x = f(5) in 2 * x * x)
+```
+it translates to nothing other than `5 + 2 * f(5) * f(5)`.
+Notice also that the same result would be obtained moving `let x = f(5) in` higher in the expression, hence here it would not matter if we used `where` instead. 
+The strength of `let ... in ...` is also evident. Unlike `where`, it can depend on *other* interim results made somewhere higher in the expression (`where` can only depend on the function input).
+
+Back to JavaScript. When you think about it, IIFE do the same exact thing. In the following example
+
+```haskell
+const g = 5 + (x => 2 * x * x)(f(5))
+```
+
+`g` will calculate `f(5)` only once, and only then it will substitute it for `x`.
+What is more, the scope of the arrow function can be extended exactly as the scope of the `let` expressions, and interim results made in a higher IIFE can be put into some IIFE lower in the chain.
+The syntax can easily be changed with a transpiler.
+
 ## Composition & Chaining
 
 As you have surely heard, function composition/chaining is very important in the FP world.
@@ -119,7 +150,7 @@ Unfortunately, there is no native operator in JS that would realize this, and we
 
 Again either we can use a pre-existing solution or come up with our own operator `o` which would emulate function composition. 
 In Haskell, for example, one can chain several functions together by using several compositions `.`.
-To avoid redundant brackets resulting from JS syntax, we should make an exception and make `o` uncarried and *polyvariadic* (even though it doesn't have to be).
+To avoid redundant brackets resulting from JS syntax, we should make an exception and make `o` uncurried and *polyvariadic* (even though it doesn't have to be).
 
 ```{.haskell .numberLines .line-anchors startFrom="1"}
 const o = (...fs) => b => 
@@ -183,7 +214,7 @@ a mock object should not be able to fool pattern matching based on `typeOf` beca
 The current JS standard pattern matching can be made readably only over one paramater and that is either using switch or an object traversing like [shown here](https://ultimatecourses.com/blog/deprecating-the-switch-statement-for-object-literals).
 Since object traversing works in collapsed arrow functions, I strictly prefer it to `switch`.
 
-First we can create a helper function `caseOf` which  does some IIFE magic so that type checking and pattern matching works at the same time.
+First we can create a helper function `caseOf` which does some IIFE magic so that type checking and pattern matching works at the same time.
 
 ```{.haskell .numberLines .line-anchors startFrom="1"}
 const caseOf = f => v => f(v)[typeOf(v)]
