@@ -66,6 +66,10 @@ header {
   overflow-wrap: break-word;
 }
 
+.modDate {
+  cursor: help;
+}
+
 .pdf {
   display: inline-block; padding: 0.1em 0.4em; background: #e67360; color: #fff; border-radius: 10%; text-transform: none; text-decoration: none; font-weight: bold; font-size: 0.7em;
   vertical-align: 0.7em;
@@ -135,6 +139,11 @@ button {
 }
 
 h1 {
+	font-weight: bold;
+  font-size: 1.6em;
+  text-transform: none;
+  color: #fff;
+  letter-spacing: normal;
   margin: 3rem 0 0rem;
 }
 
@@ -151,17 +160,14 @@ h1 {
   letter-spacing: 0.2em;
 }
 
-ul {
-  padding-left: 1.8em;
+#bibliography, h2 {
+  font-weight: normal;
+  font-size: 1.3em;
+  margin: 2rem 0 -1.5rem;
 }
 
-#bibliography, h2 {
-	font-weight: normal;
-  font-size: 1.5em;
-  text-transform: none;
-  color: #fff;
-  letter-spacing: normal;
-	margin: 2rem 0 -1rem;
+ul {
+  padding-left: 1.8em;
 }
 
 main {
@@ -176,7 +182,7 @@ article .meta {
   margin: -2.5rem 0 0;  
 }
 
-article p {
+article p, article li {
   font-family: 'Crimson Text', serif;
 	font-size: 1.8rem;
   line-height: 2.5rem;

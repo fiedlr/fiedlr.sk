@@ -165,7 +165,8 @@ main = do
         cats <- buildCategories "posts/**" (fromCapture "*/index.html")
         let pageCtx = categoriesField "cats" cats <> defaultContext
             postCtx =  categoryField' "category" cats
-                    <> dateField "date" "%B %e, %Y" <> defaultContext
+                    <> dateField "date" "%B %e, %Y"
+                    <> modificationTimeField "modificationDate" "%B %e, %Y" <> defaultContext
 
         -- Post compilation
         match "posts/**" $ do
