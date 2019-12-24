@@ -182,9 +182,8 @@ article .meta {
   margin: -2.5rem 0 0;  
 }
 
-article p, article li {
-  font-family: 'Crimson Text', serif;
-	font-size: 1.8rem;
+p, li {
+	font-size: 1.7rem;
   line-height: 2.5rem;
   max-width: 60rem;
 }
