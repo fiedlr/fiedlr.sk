@@ -60,6 +60,10 @@ header {
 	letter-spacing: 0.33em;
 }
 
+.body {
+  margin-top: 4rem;
+}
+
 .references {
   margin-top: -2rem;
   line-height: 2.5rem;
@@ -140,11 +144,21 @@ button {
 
 h1 {
 	font-weight: bold;
-  font-size: 1.6em;
+  font-size: 1.8em;
   text-transform: none;
   color: #fff;
   letter-spacing: normal;
   margin: 3rem 0 0rem;
+}
+
+h2 {
+  margin: 1.5rem 0 -1rem;
+  font-size: 1.4em;
+}
+
+h3 {
+  font-size: 1.2em;
+  margin: 1.2rem 0 -1.5rem;
 }
 
 .title {
@@ -160,7 +174,7 @@ h1 {
   letter-spacing: 0.2em;
 }
 
-#bibliography, h2 {
+#bibliography {
   font-weight: normal;
   font-size: 1.3em;
   margin: 2rem 0 -1.5rem;
