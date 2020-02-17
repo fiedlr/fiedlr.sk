@@ -1,5 +1,5 @@
 ---
-title: Is JavaScript ready for pure modules?
+title: Is JavaScript Ready for Pure Modules?
 author: Adam Fiedler
 modified: true
 ---

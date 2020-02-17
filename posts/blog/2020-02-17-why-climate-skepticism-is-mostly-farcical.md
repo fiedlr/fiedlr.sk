@@ -1,5 +1,5 @@
 ---
-title: Why Climate Skepticism is Mostly Farcical
+title: Why Climate Skepticism Is Mostly Farcical
 author: Adam Fiedler
 ---
 
