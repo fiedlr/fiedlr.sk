@@ -235,7 +235,6 @@ AddDefaultCharset utf-8
 #     appropriate schema automatically (http or https).
 
 <IfModule mod_rewrite.c>
-
     # (1)
     RewriteEngine On
 
@@ -255,10 +254,8 @@ AddDefaultCharset utf-8
     # RewriteOptions <options>
 
     # (6)
-    RewriteCond %{HTTPS} =on
-    RewriteRule ^ - [env=proto:https]
-    RewriteCond %{HTTPS} !=on
-    RewriteRule ^ - [env=proto:http]
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [L,R]
 
     # (7)
     # Requested resource does not exist, do rewrite if it exists as .html
