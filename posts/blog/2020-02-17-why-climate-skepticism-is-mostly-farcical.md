@@ -14,7 +14,7 @@ These so-called *climate deniers* or *climate skeptics* usually say one of the t
 Either way, the only thing climate deniers propose is simply maintaining the status quo when it comes to our environmental politics.
 And that is more farcical than the climate  conspiracy theory.
 They are disguised traditionalists, sometimes with a facade of warriors fighting for truth, sometimes with a facade of economists -- analyzing how much greener politics will cost us.
-In the meantime, our current policies are absurdly insufficient and misguided skepticism about global warming might have the highest cost of all: the extinction of humankind.
+In the meantime, our current policies are absurdly insufficient and misguided skepticism about global warming might have the highest cost of all: the extinction of human life as we know it.
 
 In comparison, misguided belief in climate models is not only highly improbable, we can arguably gain by implementing carbon  policies in any case.
 I shamefully admit that the argument bears some resemblance to the infamous *Pascal's wager*.
@@ -24,7 +24,7 @@ There has naturally appeared vocal criticism of this wager.
 We can have no certainty that we should believe in the *right* God out of the many ones preached by all the religions around the world.
 The religion we've happened to be born into can impose strict limitations on our lifestyles in vain.
 A theologist would say that God sees through such rationalized faith (as an agnostic, I daresay this is not valid).
-None of it is relevant, however, when we make a Pascal's wager on our ability to *deal with climate change*.
+None of this is relevant, however, when we make a Pascal's wager on our ability to *deal with climate change*.
 
 Even if our actions were ineffective in the end or we were just blinded by the hard data about global warming, we may really only gain by most of the ideas echoed by environmental activism. 
 And unlike in Pascal's original wager, we will actually live to see the effects of our decisions. 
@@ -54,8 +54,8 @@ Electric cars, for example, may not be ready yet as an alternative -- among othe
 The problem is that they will never be ready if there are no pioneers. 
 And there might be hardly any pioneers without public initiative since many of the needed technologies are not *disruptive* in the Christensen's sense of the word.
 
-It may seem as exaggerating but we *are* in a similar situation to the days of the Apollo program.
-The challenges we face can too be dealt with only having cooperation among governments, businesses and the public. 
+It may seem as exaggerating but we *are* in a situation similar to the days of the Apollo program.
+The challenges we face now can be dealt with only having cooperation among governments, businesses and the public. 
 Behind the rage on all sides, there are in fact two scenarios in this debate.
 Either we choose trying to change some of our ways and at worst risk some economic cost at the "expense" of improving our urban life and preserving the sights of the countryside, or risk our extinction.
 To me the choice seems quite obvious.
