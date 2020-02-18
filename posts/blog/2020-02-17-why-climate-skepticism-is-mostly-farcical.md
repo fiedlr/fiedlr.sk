@@ -48,7 +48,7 @@ We need more greenery in the cities, even if it was only for aesthetic and psych
 We need to protect the last untouched lands such as the Arctic not only for their habitats' sake, but also for their huge scientific significance.
 They serve as deep reservoirs of geological memory.  
 
-The solutions required for these changes will cost us but also arguably build huge economic *incentive*, in the same way as the Apollo program employed thousands of people and made breakthroughs in research.
+The solutions required for these changes will cost us but also potentially build huge economic *incentive*, in the same way as the Apollo program employed thousands of people and made breakthroughs in research.
 There can be disagreement over what solutions are the right ones.
 Electric cars, for example, may not be ready yet as an alternative -- among other things for the state of battery technology.
 The problem is that they will never be ready if there are no pioneers. 
