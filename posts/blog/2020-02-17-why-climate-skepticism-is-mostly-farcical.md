@@ -23,8 +23,8 @@ If God does not exist, then nothing or very little is lost.
 There has naturally appeared vocal criticism of this wager.
 We can have no certainty that we should believe in the *right* God out of the many ones preached by all the religions around the world.
 The religion we've happened to be born into can impose strict limitations on our lifestyles in vain.
-A theologist would say that God sees through such rationalized faith (as an agnostic, I daresay this is no point at all).
-None of these points are relevant, however, when we make a Pascal's wager on our ability to *deal with climate change*.
+A theologist would say that God sees through such rationalized faith (as an agnostic, I daresay this is not valid).
+None of it is relevant, however, when we make a Pascal's wager on our ability to *deal with climate change*.
 
 Even if our actions were ineffective in the end or we were just blinded by the hard data about global warming, we may really only gain by most of the ideas echoed by environmental activism. 
 And unlike in Pascal's original wager, we will actually live to see the effects of our decisions. 
@@ -37,7 +37,7 @@ Unless we are blatantly careless and are ourselves willing to fight with worseni
 
 On the other hand, climate skepticism is mostly ridiculous because its motives other than those of sound scientific nature are.
 Its targets are whimsical.
-I ask what is wrong with the usual proposals made by climate activists?
+I ask what is wrong with the usual points made by climate activists?
 We need nevertheless to burn less oil.
 We need nevertheless more efficient devices.
 We need nevertheless to orient our traffic towards mass transit to fight smog and rid streets of stuck cars.
@@ -54,8 +54,8 @@ Electric cars, for example, may not be ready yet as an alternative -- among othe
 The problem is that they will never be ready if there are no pioneers. 
 And there might be hardly any pioneers without public initiative since many of the needed technologies are not *disruptive* in the Christensen's sense of the word.
 
-It may seem amusing but we *are* in a similar situation to the days of the Apollo program.
-The challenges we face can be dealt only in cooperation of governments, businesses and the public. 
+It may seem as exaggerating but we *are* in a similar situation to the days of the Apollo program.
+The challenges we face can too be dealt with only having cooperation among governments, businesses and the public. 
 Behind the rage on all sides, there are in fact two scenarios in this debate.
 Either we choose trying to change some of our ways and at worst risk some economic cost at the "expense" of improving our urban life and preserving the sights of the countryside, or risk our extinction.
 To me the choice seems quite obvious.
