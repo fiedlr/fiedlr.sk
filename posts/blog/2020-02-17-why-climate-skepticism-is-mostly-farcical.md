@@ -24,7 +24,7 @@ There has naturally appeared vocal criticism of this wager.
 We can have no certainty that we should believe in the *right* God out of the many ones preached by all the religions around the world.
 The religion we've happened to be born into can impose strict limitations on our lifestyles in vain.
 A theologist would say that God sees through such rationalized faith (as an agnostic, I daresay this is no point at all).
-None of them are relevant, however, when we make a Pascal's wager on our ability to *deal with climate change*.
+None of these points are relevant, however, when we make a Pascal's wager on our ability to *deal with climate change*.
 
 Even if our actions were ineffective in the end or we were just blinded by the hard data about global warming, we may really only gain by most of the ideas echoed by environmental activism. 
 And unlike in Pascal's original wager, we will actually live to see the effects of our decisions. 
