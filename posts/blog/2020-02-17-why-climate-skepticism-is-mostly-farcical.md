@@ -36,6 +36,7 @@ The last shred of hope for our conventional lifestyles, which lies in demographi
 Unless we are blatantly careless and are ourselves willing to fight with worsening air conditions, never-ending traffic jams and our own melting in jungles of concrete, it simply makes sense to raise climate awareness and implement sustainable policies.
 
 On the other hand, climate skepticism is mostly ridiculous because its motives other than those of sound scientific nature are.
+Its targets are whimsical.
 I ask what is wrong with the usual proposals made by climate activists?
 We need nevertheless to burn less oil.
 We need nevertheless more efficient devices.
