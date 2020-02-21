@@ -32,7 +32,7 @@ And unlike in Pascal's original wager, we will actually live to see the effects 
 Population is growing and fossil fuels are diminishing.
 Even though it sounds as emotional blackmail, many ecosystems are dying.
 We do not need to admit climate change to admit these facts.
-The last shred of hope for our conventional lifestyles, which lies in demographic peaks and oil-producing algae, is destroyed by Hardin's *Tragedy of the Commons*.
+The last shred of hope for our conventional lifestyles is shredded by Hardin's *Tragedy of the Commons*.
 Unless we are blatantly careless and are ourselves willing to fight with worsening air conditions, never-ending traffic jams and our own melting in jungles of concrete, it simply makes sense to raise climate awareness and implement sustainable policies.
 
 On the other hand, climate skepticism is mostly ridiculous because its motives other than those of sound scientific nature are.
@@ -58,4 +58,4 @@ It may seem as exaggerating but we *are* in a situation similar to the days of t
 The challenges we face now can be dealt with only having cooperation among governments, businesses and the public. 
 Behind the rage on all sides, there are in fact two scenarios in this debate.
 Either we choose trying to change some of our ways and at worst risk some economic cost at the "expense" of improving our urban life and preserving the sights of the countryside, or risk our extinction.
-To me the choice seems quite obvious.
+To me the choice seems rather obvious.
