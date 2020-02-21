@@ -1,12 +1,13 @@
 <article>
     <section class="meta">
-        Posted in $category$ on $date$
+        Posted on $date$ in $category$
         $if(modified)$
         <br>
         (Modified on <span class="modDate" title="Check GitHub for prior versions.">$modificationDate$</span>)
         $endif$
     </section>
     <section class="body">
+        $if(teaser)$<p>$teaser$</p>$endif$
         $body$
     </section>
 </article>

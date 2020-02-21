@@ -1,11 +1,11 @@
 ---
 title: Why Climate Skepticism Is Mostly Farcical
 author: Adam Fiedler
+teaser: "The consensus among scientists is quite clear: climate change is happening.
+There is plenty of evidence in favor.
+However, many people surprisingly still deny this for dubious reasons."
 ---
 
-The consensus among scientists is quite clear: climate change *is* happening.
-There is plenty of evidence in favor.
-However, many people surprisingly still deny this for dubious reasons.
 These so-called *climate deniers* or *climate skeptics* usually say one of the two:
 
 1) Climate change is not happening and the climate experts are either simply wrong or participating in a conspiracy run by big business.

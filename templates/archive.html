@@ -1,1 +1,11 @@
-$partial("templates/post-list.html")$
+$for(posts)$
+<article>
+    $if(teaser)$
+    <h1><a href="$url$">$title$</a></h1> 
+    <section class="meta">Posted on $date$</section>
+    <section class="body"><p>$teaser$.. <a href="$url$">Read more</a>.</p></section>
+    $else$
+    <p><a href="$url$">$title$</a> ($date$)</p>
+    $endif$
+</article>
+$endfor$

@@ -2,11 +2,10 @@
 title: Is JavaScript Ready for Pure Modules?
 author: Adam Fiedler
 modified: true
+teaser: "Functional programming (FP) is not new to JavaScript.
+One proof of that might be the fact that there exist several helpful FP libraries like <a href='http://ramdajs.com'>Ramda</a>.
+However, the real question is if JS itself evolved enough to write <em>isolated</em> pieces of code in this paradigm."
 ---
-
-Functional programming (FP) is not new to JavaScript.
-One proof of that might be the fact that there exist several helpful FP libraries like [Ramda](http://ramdajs.com).
-However, the real question is if JS *itself* evolved enough to write *isolated* pieces of code in this paradigm.
 
 With the introduction of [arrow functions](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Arrow_functions) I came to realize that vanilla JS is much closer to the ideal of containing the necessary toolset to write what I call *pure modules*.
 Let me first precisely define what I imagine a pure module is, and describe why they are a useful concept. Then I'll show why I think vanilla JS is ready for pure modules.

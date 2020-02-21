@@ -131,6 +131,10 @@ a:hover {
 	color: #e67360;
 }
 
+h1 a {
+  text-decoration: none;
+}
+
 button {
 	display: inline-block;
 	border: 0;
@@ -172,6 +176,10 @@ ul {
 main {
   padding: 0 5%;
   min-height: 66%;
+}
+
+article {
+  margin-bottom: 4rem;
 }
 
 article .meta {
