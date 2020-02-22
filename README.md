@@ -19,6 +19,8 @@ Here's the list of key things to me that I haven't found in Hakyll and managed t
 - `removeHTMLExtensions` filter can be used to remove '.html' extension from relative links,
   - use if you want nice URLs without messing with the routes (e.g. you have set up *mod_redirect* in `.htaccess`),
 - `numbersections: true` in the YAML block *enables* section numbering from LaTeX sources (unlike unmodified Hakyll),
-- for internal links in LaTeX sources use the standard `\label{id}` with `\protect\hyperlink{id}{link name}` (`\ref` does not work).
-- `teaser: "string"` in the YAML block sets `string` as the introduction for the post in the post list (it is INCLUDED in the post itself)
-  - `excludeteaser: true` in the YAML block excludes the teaser from the post
+- for internal links in LaTeX sources use the standard `\label{id}` with `\protect\hyperlink{id}{link name}` (`\ref` does not work),
+- `teaser: "string"` in the YAML block sets `string` as the introduction for the post in the post list (it is INCLUDED in the post itself),
+  - teaser also determines, if the post will be shown in the recent posts, 
+  - `excludeteaser: true` in the YAML block excludes the teaser from the post.
+- `pages` folder for static pages generation (accessible from root)
