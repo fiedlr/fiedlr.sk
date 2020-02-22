@@ -1,7 +1,9 @@
-<ul>
-    $for(posts)$
-        <li>
-            <a href="$url$">$title$</a> ($date$)
-        </li>
-    $endfor$
-</ul>
+$for(posts)$
+    $if(teaser)$
+        <article>
+            <h1><a href="$url$">$title$</a></h1> 
+            <section class="meta">Posted on $date$ in $category$</section>
+            <section class="body"><p>$teaser$.. <a href="$url$">Read more</a>.</p></section>
+        </article>
+    $endif$
+$endfor$
