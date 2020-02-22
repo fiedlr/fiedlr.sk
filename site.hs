@@ -228,6 +228,15 @@ main = do
                     >>= loadAndApplyTemplate "templates/default.html" archiveCtx
                     >>= relativizeUrls >>= removeHTMLExtensions
 
+        -- Generate static pages
+        match "pages/**" $ do
+            route $ gsubRoute "pages/" (const "") `composeRoutes` setExtension ".html"
+            compile $ do
+                getResourceBody
+                    >>= applyAsTemplate pageCtx
+                    >>= loadAndApplyTemplate "templates/default.html" pageCtx
+                    >>= relativizeUrls >>= removeHTMLExtensions
+
         -- Generate homepage
         match "index.html" $ do
             route idRoute
