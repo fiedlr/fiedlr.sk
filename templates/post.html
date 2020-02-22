@@ -7,7 +7,12 @@
         $endif$
     </section>
     <section class="body">
-        $if(teaser)$<p>$teaser$</p>$endif$
+        $if(teaser)$
+            $if(excludeteaser)$
+            $else$
+                <p>$teaser$</p>
+            $endif$
+        $endif$
         $body$
     </section>
 </article>
