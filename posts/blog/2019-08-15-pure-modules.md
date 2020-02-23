@@ -28,7 +28,7 @@ Note that the Condition 2 can leave out the mention of constants because they ar
 Expressions in Condition 7 only mean that arrow functions are collapsed (definitions do not start with `{`). The consequence of this is that no expanded flow controls like loops are allowed.
 Therefore conditions 5-7 can also be summarized as all functions that the module defines are strictly of the form (value constructors are shown at the end of the article)
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 const f = x0 => x1 => ... => xn => y
 ```
 
@@ -55,14 +55,14 @@ In the following sections I discuss existing possibilities one by one.
 
 Luckily for us, arrow functions are right folded so the aforementioned example is interpreted
 
-```{.haskell .numberLines .line-anchors startFrom="1"} 
+```{.javascript .numberLines .line-anchors startFrom="1"} 
 const f = x0 => (x1 => (... => (xn => y)))
 ```
 
 Therefore currying comes natural with arrow functions without any helper functions.
 Partial application works as a charm, in 
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 const modCounter = modulo => x => x % modulo
 const mod5Counter = modCounter(5)
 ```
@@ -72,13 +72,13 @@ const mod5Counter = modCounter(5)
 The only drawback is that the *order* of partially applied parameters cannot be changed in binary funcions this way (analogous to *sections*).
 That is why we can also define the helpful function `flip` as follows
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 const flip = f => x => y => f(y)(x)
 ```
 
 Now it is easy to define
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 const remOf5 = flip(modCounter)(5)
 ```
 
@@ -90,7 +90,7 @@ All in all, a `curry` function is not that difficult to define ourselves in mode
 This is a feature that would be really handy in JS, as it is common practice to have uncurried functions with more than two arguments.
 Consider the following example
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 const curryHelper = (...args) => 
   f => f(...args) 
      ? f(...args)
@@ -103,7 +103,7 @@ This `currify` works on any function with a fixed number of parameters.
 
 An `uncurrify` function works similarly and can be defined as follows
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 const uncurrify = f => 
   (...args) => args.reduce( 
     (g, x) => g(x), f
@@ -125,7 +125,7 @@ Although arguably not as convenient to use, Immediately Invoked Function Express
 A quick detour just to demonstrate this fact (you can skip safely skip this). 
 In Haskell, `let` ... `in` ... are expressions and not control structures such as `where` because they can be used exactly as any other expressions.
 Therefore, if we have an expression of the form 
-```haskell 
+```javascript 
 5 + (let x = f(5) in 2 * x * x)
 ```
 it translates to nothing other than `5 + 2 * f(5) * f(5)`.
@@ -134,7 +134,7 @@ The strength of `let ... in ...` is also evident. Unlike `where`, it can depend 
 
 Back to JavaScript. When you think about it, IIFE do the same exact thing. In the following example
 
-```haskell
+```javascript
 const g = 5 + (x => 2 * x * x)(f(5))
 ```
 
@@ -151,7 +151,7 @@ Again either we can use a pre-existing solution or come up with our own operator
 In Haskell, for example, one can chain several functions together by using several compositions `.`.
 To avoid redundant brackets resulting from JS syntax, we should make an exception and make `o` uncurried and *polyvariadic* (even though it doesn't have to be).
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 const o = (...fs) => b => 
   fs.reduceRight(
     (x, f) => f(x), b
@@ -160,7 +160,7 @@ const o = (...fs) => b =>
 
 Now if you type something like
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 const plusplus5 = o(plus5, plus5)
 ```
 
@@ -178,7 +178,7 @@ We can construct values using functions called *value constructors*.
 Again to our luck, constructors already exist in JS and are set and called by the `new` operator. 
 We can nicely force JS this way to remember the used value constructor 
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 function Integer(x) {
   this.Num = x;
 }
@@ -195,7 +195,7 @@ You cannot define a different value constructor with the same name.
 
 Using [object destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#Object_destructuring) we can now emulate type checking in function methods like this
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 const typedPlus = ({Num: a}) => ({Num: b}) => a + b
 ```
 
@@ -204,7 +204,7 @@ const typedPlus = ({Num: a}) => ({Num: b}) => a + b
 There is one other advantage of using the `new` technique for value constructing.
 If we use the following function to return types
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 const typeOf = v => v.__proto__.constructor.name
 ```
 
@@ -215,7 +215,7 @@ Since object traversing works in collapsed arrow functions, I strictly prefer it
 
 First we can create a helper function `caseOf` which does some IIFE magic so that type checking and pattern matching works at the same time.
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 const caseOf = f => v => f(v)[typeOf(v)]
 ```
 
@@ -223,7 +223,7 @@ It takes a pattern matching function over the type of `v` and returns a function
 
 You can try it out on the following example.
 
-```{.haskell .numberLines .line-anchors startFrom="1"}
+```{.javascript .numberLines .line-anchors startFrom="1"}
 const decrement = caseOf(({Num: x}) => 
   ({ 
     Integer: x - 1, 
