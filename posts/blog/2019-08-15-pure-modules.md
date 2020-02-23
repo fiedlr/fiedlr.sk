@@ -199,8 +199,7 @@ Using [object destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaSc
 const typedPlus = ({Num: a}) => ({Num: b}) => a + b
 ```
 
-## Pattern matching
-
+### Pattern matching
 There is one other advantage of using the `new` technique for value constructing.
 If we use the following function to return types
 
