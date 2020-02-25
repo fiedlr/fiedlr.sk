@@ -47,18 +47,18 @@ There are two essential functions needed to be done before the game starts funct
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
 import React from 'react'
-import Tile from './components'
+import Tile from './tile'
 
 const render = board => handleClick => 
   <div className="TicTacToe"></div>
  
-const main = tileId => (state, _) => state
+const nextStep = tileId => (state, _) => state
 
-export {render, main}
+export {render, nextStep}
 ```
 
-The `render` function takes care of rendering the board according to its state given in `board` and a `handleClick` handler, which just calls `main` when a tile is clicked.
-In comparison, `main` takes the id of the clicked tile (which we will need to generate somehow) and the `state`, which contains the model we just went over (the `_` argument stands for the React props which are not needed here).
+The `render` function takes care of rendering the board according to its state given in `board` and a `handleClick` handler, which just calls `nextStep` when a tile is clicked.
+In comparison, `nextStep` takes the id of the clicked tile (which we will need to generate somehow) and the `state`, which contains the model we just went over (the `_` argument stands for the React props which are not needed here).
 We want to use *arrow expressions* only to implement these functions.
 As will be soon evident, this is possible without any nasty hacking or tricks.
 
@@ -103,7 +103,7 @@ The `Tile` component handles the styles for us, which makes the `render` functio
 
 ## Managing state
 
-Although the `render` function seemed easy to do, `main` will be trickier.
+Although the `render` function seemed easy to do, `nextStep` will be trickier.
 We can *decompose* the game into three main steps that are made in any particular moment. 
 This is perfect for using function decomposition not to get lost in the process.
 
@@ -111,21 +111,73 @@ This is perfect for using function decomposition not to get lost in the process.
 2. Determining the game is finished and getting the winner id ~> `getWinnerId`
 3. Resetting the game and incrementing the score of the winner ~> `newGame`
 
-`getIdOfPlayerOnTurn`. This one is probably the least obvious.
+### `getIdOfPlayerOnTurn`
+This one is probably the least obvious.
 Since we cannot pass any helper variable to tell us whose turn it is, we must only blindly believe in the insight of the blueprint's creator (me :-D) and assume that the data we have in hand tell us already.
 This is indeed true: the board reveals how many turns we have so far played in the number of non-zero tiles. 
 And since there are two players, player X will play each *even* turn and player O each *odd* turn. 
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
 const getNumberOfTurns = board => board.reduce(
-  (tilePlayedBy, count) => count + Math.ceil(tilePlayedBy / 2)
+  (tilePlayedBy, count) => count + Math.ceil(tilePlayedBy / 2),
+  0
 )
 
 const getIdOfPlayerOnTurn = board => getNumberOfTurns(board) % 2 + 1
 ```
 
-`getWinnerId`. All of us have probably played TicTacToe in some point of our lives.
-We need three X's (O's) in a row, column, or a diagonal.
+### `getWinnerId`
+All of us have probably played TicTacToe in some point of our lives.
+We need three X's (O's) in a row (~> `getRow`), column (~> `getCol`), or a diagonal (~> `getDia`).
+If in one of these cases there are three identical playerIds to the playerId on turn, we have a winner with this id (`winnerRowOrColExists`)
+We use an IIFE to create a constant `winnerArray` to be compared with both of a given type's neighbors and save us the trouble to compare them separately.
+
+```{.javascript .numberLines .line-anchors startFrom="1"}
+const getRow = board => tileIndex => (rowId => [
+  board[rowId], board[rowId + 1], board[rowId + 2]
+])(tileIndex / 3)
+
+const getCol = board => tileIndex => (colId => [
+  board[colId], board[colId + 3], board[colId + 6]
+])(tileIndex % 3)
+
+const winnerRowOrColExists = board => winCombo =>
+  board.reduce((_, _, tileIndex) => 
+    getRow(board, tileIndex) === winCombo || 
+    getCol(board, tileIndex) === winCombo,
+    False
+  )
+
+const getDia1 = board => [board[0], board[4], board[8]]
+
+const getDia2 = board => [board[2], board[4], board[6]]
+
+const winnerDiagonalExists = board => winCombo => 
+  getDia1(board) === winCombo || getDia2(board) === winCombo
+
+const getWinnerId = board => playerOnTurn => (winCombo => 
+  winnerRowOrColExists(board, winCombo) ||
+  winnerDiagonalExists(board, winCombo)  ? playerOnTurn : 0
+)([playerOnTurn, playerOnTurn, playerOnTurn])
+```
+
+Although `getWinnerId` is a little more inefficient that it need be, for brevity
+we will keep it as it is... We are still only working with a 3x3 grid.
+If we needed bigger grids, we could use several techniques (e.g. lazy evaluation with boolean operators, checking only from the top left corners, winner configuration imprints...).
+
+### `newGame`
+We just need to return a reset game with incremented score of the winner.
+This is straightforward:
+
+```{.javascript .numberLines .line-anchors startFrom="1"}
+const newGame = board => winnerId => {
+  board: board.fill(0),
+  `scoreOfPlayer${winnerId}`: state[`scoreOfPlayer${winnerId}`] + 1
+}
+```
+
+### `nextStep`
+Putting it all together, we are finally able to implement `nextStep` in a clear manner.
 
 # Testing
 
