@@ -18,7 +18,7 @@ And that not only through separation of concerns: the pureness of the module wil
 # Implementation
 
 A blueprint of the task is saved in [one of my repositaries](https://github.com/fiedlr/fp-workshop).
-Feel free to work it out on your own and compare your solution with mine.
+Feel free to work it out on your own and compare your solution with mine (in scratch: you need to finish `game.js` and while doing that, use *arrow expressions* only!).
 If you have some experience with functional programming, by now you should have all the knowledge necessary to solve it.
 For the rest of us, we start first with how the model looks:
 
@@ -43,7 +43,7 @@ The model attributes are passed to us *for us* in the corresponding functions th
 We cannot change the model attributes *in any way*, they should be taken as constants -- we can only decide what we *return* in the functions.
 Remember also that since we will be implementing a pure module, we cannot use anything but *arrow expressions*.
 
-There are two essential functions needed to be done before the game starts functioning:
+There are two essential functions needed to be done before the game starts functioning (pun intended):
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
 import React from 'react'
@@ -57,9 +57,9 @@ const nextStep = tileId => (state, _) => state
 export {render, nextStep}
 ```
 
-The `render` function takes care of rendering the board according to its state given in `board` and a `handleClick` handler, which just calls `nextStep` when a tile is clicked.
-In comparison, `nextStep` takes the id of the clicked tile (which we will need to generate somehow) and the `state`, which contains the model we just went over (the `_` argument stands for the React props which are not needed here).
-We want to use *arrow expressions* only to implement these functions.
+The `render` function takes care of rendering the board according to its state given in `board` and a `handleClick` handler, which just calls `nextStep` when a tile is clicked and saves the new state into the model.
+In comparison, `nextStep` takes the id of the clicked tile (which we will need to generate somehow) and the `state`, which contains the model we just went over (the `_` argument stands for the React props which are not needed here), and returns a new state with the clicked tile fixed to the player that clicked it.
+We want to use *arrow expressions only* to implement these functions.
 As will be soon evident, this is possible without any nasty hacking or tricks.
 
 ## Rendering
@@ -109,7 +109,8 @@ This is perfect for using function decomposition not to get lost in the process.
 
 1. Determining whose turn it is ~> `getIdOfPlayerOnTurn`
 2. Determining the game is finished and getting the winner id ~> `getWinnerId`
-3. Resetting the game and incrementing the score of the winner ~> `newGame`
+3. Determining the new state if a tile with `tileId` is clicked ~> `newState`
+4. Resetting the game and incrementing the score of the winner ~> `newGame`
 
 ### `getIdOfPlayerOnTurn`
 This one is probably the least obvious.
@@ -165,19 +166,59 @@ Although `getWinnerId` is a little more inefficient that it need be, for brevity
 we will keep it as it is... We are still only working with a 3x3 grid.
 If we needed bigger grids, we could use several techniques (e.g. lazy evaluation with boolean operators, checking only from the top left corners, winner configuration imprints...).
 
+### `newState`
+This function should take the id of the clicked tile and returning a *new state* with a board, where the given tile is marked with the player whose turn it was.
+We *do not change* the original state in any way!
+Since we cannot use any loops, we'll just map over the original board and return one where the clicked tile has the assigned playerId.
+The rest of the state remains unchanged.
+
+```{.javascript .numberLines .line-anchors startFrom="1"}
+const newState = state => clickedTileId => playerOnTurn => ({
+  ...state,
+  board: state.board.map((_, tileIndex) => 
+    tileIndex == clickedTileId 
+    ? playerOnTurn
+    : state.board[clickedTileId])
+})
+```
+
 ### `newGame`
 We just need to return a reset game with incremented score of the winner.
 This is straightforward:
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
-const newGame = board => winnerId => {
+const newGame = board => winnerId => ({
   board: board.fill(0),
   `scoreOfPlayer${winnerId}`: state[`scoreOfPlayer${winnerId}`] + 1
-}
+})
 ```
 
 ### `nextStep`
 Putting it all together, we are finally able to implement `nextStep` in a clear manner.
+Each turn will look as follows.
+
+1. If there is no winner, we return a new state with the clicked tile changed to the player on turn.
+2. Otherwise start a new game.
+
+By now it should be obvious that in order to achieve this, we need functions `newState`, `newGame` we've just implemented and pass them the arguments that they take.
+It should also be obvious now why they take some arguments, which they would not really need (such as `playerOnTurn`): among others, to prevent recounting and simplifying unit testing.
+
+```{.javascript .numberLines .line-anchors startFrom="1"}
+const nextStep = tileId => (state, _) => state => (
+  playerOnTurn => (
+    winnerId => !winnerId 
+      ? newState(state, tileId, playerOnTurn) 
+      : newGame(board, winnerId)
+    )(getWinnerId(state.board, playerOnTurn))
+  )(getIdOfPlayerOnTurn(state.board))
+)
+```
+
+That's really all there is to it in terms of implementation.
+Notice how a seemingly easy function turned into quite a beast.
+We wouldn't have made it without function decomposition, which is *essential*
+not only in programming but especially in FP.
+The whole result can be seen running in the following snippet.
 
 # Testing
 
