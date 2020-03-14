@@ -16,7 +16,7 @@ body {
   width: 100%;
   height: 100%;
   background: #303030;
-	color: #fff;
+	color: #ededed;
 	font-family: 'Railway', sans-serif;
 	font-size: 1.4rem;
   line-height: 1.5;
@@ -126,7 +126,7 @@ footer {
 }
 
 a {
-  color: white;
+  color: #ededed;
 	text-decoration: underline;
 }
 
