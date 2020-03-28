@@ -148,11 +148,11 @@ const renderGame = board => handleClick =>
   }</div> 
 ```
 
-The `Tile` component handles the styles for us, which makes the `render` function finished.
+The `Tile` component handles the styles for us, which makes the `renderGame` function finished.
 
 ## Managing state
 
-Although the `render` function seemed easy to do, `nextStep` will be trickier.
+Although the `renderGame` function seemed easy to do, `nextStep` will be trickier.
 We can *decompose* the game into three main steps that are made in any particular moment. 
 This is perfect for using function decomposition not to get lost in the process.
 
@@ -176,54 +176,6 @@ const getNumberOfTurns = board => board.reduce(
 const getIdOfPlayerOnTurn = board => getNumberOfTurns(board) % 2 + 1
 ```
 
-### `getWinnerId`
-All of us have probably played 3x3 TicTacToe in some point of our lives.
-We need three X's (O's) in a row (~> `getRow`), column (~> `getCol`), or a diagonal (~> `getDiag`).
-If in one of these cases there are three identical playerIds to the playerId on turn, we have a winner with this id (`winnerRowOrColExists`).
-
-Because Javascript is dumb enough not to have any built-in array comparator, we'll create a simple checker for containing a value of *trivial* data types called `containsOnlyVal`.
-We need only check if a row, column or a diagonal contains the `playerOnTurn`.
-Here the magic of curried functions will be made evident: using our IIFE trick, we create a local function called `isWinning`, which checks if an array contains only `playerOnTurn` values.
-`isWinning` is nothing but a partially applied `containsOnlyVal`!
-
-```{.javascript .numberLines .line-anchors startFrom="1"}
-const getWinnerId = board => playerOnTurn => (isWinning => 
-  winnerRowOrColExists(board)(isWinning) ||
-  winnerDiagonalExists(board)(isWinning)  ? playerOnTurn : 0
-)(containsOnlyVal(playerOnTurn))
-
-const containsOnlyVal = val => arr => 
-  arr.reduce((prev, current) => prev && current === val, true)
-
-// Row and column checking
-const getRow = board => tileIndex => (firstOnRow => [
-  board[firstOnRow], board[firstOnRow + 1], board[firstOnRow + 1 + 1]
-])(Math.floor(tileIndex / 3))
-
-const getCol = board => tileIndex => (firstOnCol => [
-  board[firstOnCol], board[firstOnCol + 3], board[firstOnCol + 3 + 3]
-])(tileIndex % 3)
-
-const winnerRowOrColExists = board => isWinning =>
-  board.reduce((prev, _, tileIndex) => prev
-    || isWinning(getRow(board)(tileIndex))
-    || isWinning(getCol(board)(tileIndex)),
-    false
-  )
-
-// Diagonal checking
-const getDiag1 = board => [board[0], board[4], board[8]]
-
-const getDiag2 = board => [board[2], board[4], board[6]]
-
-const winnerDiagonalExists = board => isWinning => 
-  isWinning(getDiag1(board)) || isWinning(getDiag2(board))
-```
-
-Although `getWinnerId` is a little more inefficient that it need be, for brevity
-we will keep it as it is... We are still only working with a 3x3 grid.
-If we needed bigger grids, we could use several techniques (e.g. lazy evaluation with boolean operators, checking only from the top left corners, winner configuration imprints...).
-
 ### `newState`
 This function should take the id of the clicked tile and returning a *new state* with a board, where the given tile is marked with the player whose turn it was.
 We *do not change* the original state in any way!
@@ -239,6 +191,67 @@ const newState = state => clickedTileId => playerOnTurn => ({
     : state.board[tileIndex])
 })
 ```
+
+### `getWinnerId`
+All of us have probably played 3x3 TicTacToe in some point of our lives.
+We need three X's (O's) in a row (~> `getRow`), column (~> `getCol`), or a diagonal (~> `getDiag`).
+If in one of these cases there are three identical playerIds to the playerId on turn, we have a winner with this id (`winnerRowOrColExists`).
+
+We need only check if any row, column or a diagonal contains the `playerOnTurn`.
+Because Javascript is dumb enough not to have any built-in array comparator, we'll create a simple checker `containsOnlyVal` to check if an array contains only a given value of a *trivial* data type.
+Here the magic of curried functions will be made evident: using our IIFE trick, we create a local function called `isWinning`, which checks if an array contains only `playerOnTurn` values.
+`isWinning` is nothing but a partially applied `containsOnlyVal`!
+
+```javascript
+const getWinnerId = board => playerOnTurn => (isWinning => 
+  winnerRowOrColExists(board)(isWinning) ||
+  winnerDiagonalExists(board)(isWinning)  ? playerOnTurn : 0
+)(containsOnlyVal(playerOnTurn))
+
+const containsOnlyVal = val => arr => 
+  arr.reduce((prev, current) => prev && current === val, true)
+```
+
+For rows and columns, we'll go through each tile and check its corresponding row and column, if it satisfies `isWinning`. 
+I'm not really sure here if JS behaves lazily in the following uses of `reduce`. 
+Even if we were doing everything everything thrice, it doesn't matter in a 3x3 grid.
+
+```javascript
+// Row and column checking
+const getRow = board => tileIndex => (firstOnRow => [
+  board[firstOnRow], board[firstOnRow + 1], board[firstOnRow + 1 + 1]
+])(Math.floor(tileIndex / 3))
+
+const getCol = board => tileIndex => (firstOnCol => [
+  board[firstOnCol], board[firstOnCol + 3], board[firstOnCol + 3 + 3]
+])(tileIndex % 3)
+
+const winnerRowOrColExists = board => isWinning =>
+  board.reduce((prev, _, tileIndex) => prev
+    || isWinning(getRow(board)(tileIndex))
+    || isWinning(getCol(board)(tileIndex)),
+    false
+  )
+```
+
+For diagonals, we just extract the corresponding tile values by hand.
+If we had bigger grids, we could abstract this in a similar way as we abstracted getting a row or a col for a particular tile.
+There would be some problems with boundaries though, hence the simple attitude in this case.
+
+```javascript
+// Diagonal checking
+const getDiag1 = board => [board[0], board[4], board[8]]
+
+const getDiag2 = board => [board[2], board[4], board[6]]
+
+const winnerDiagonalExists = board => isWinning => 
+  isWinning(getDiag1(board)) || isWinning(getDiag2(board))
+```
+
+Although `getWinnerId` is a little more inefficient that it need be, for brevity
+we will keep it as it is...
+We are still only working with a 3x3 grid.
+If we needed bigger grids, we could use several techniques (e.g. actually making sure the evaluation is lazy, checking only from the top left corners, winner configuration imprints...).
 
 ### `newGame`
 We just need to return a reset game with incremented score of the winner.
@@ -277,6 +290,8 @@ const nextStep = tileId => (state, _) => (
 Notice how we need to count the newState *before* deciding whether to return it or the new game.
 This is because all of the functions we've implemented actually count with the fact that a turn has just been made.
 
+# Result
+
 That's really all there is to it in terms of implementation.
 Adding a couple of lines of CSS, the whole result can be seen running in the following snippet.
 
@@ -285,10 +300,10 @@ Adding a couple of lines of CSS, the whole result can be seen running in the fol
     title="pm-tictactoe on Glitch"
     style="height: 100%; width: 100%; border: 0;"></iframe></div>
 
-Notice how a seemingly easy function `nextStep` turned into quite a beast.
+A seemingly easy function `nextStep` turned into quite a beast.
 We wouldn't have made it without function decomposition, which is *essential*
 not only in programming but especially in FP.
 However, it was really worth it.
 The entire `game.pure.js` is *without any side effects*.
-Each one of its functions is parallizable, super easy to unit test, type and much more.
+Each one of its functions is easy to parallelize, unit test, type and much more.
 Once the time comes, this will be covered in one of the next articles.
