@@ -149,12 +149,11 @@ main :: IO ()
 main = do
     temp <- readFile "template.tex"
     hakyll $ do
-        match (fromList [".htaccess", "browserconfig.xml", "robots.txt", "favicon.ico"]) $ do
-            route   idRoute
-            compile copyFileCompiler
-        match "images/*" $ do
-            route   idRoute
-            compile copyFileCompiler
+        match (
+            "images/*" .||. fromList [".htaccess", "browserconfig.xml", "robots.txt", "favicon.ico"]
+            ) $ do
+                route   idRoute
+                compile copyFileCompiler
         match "css/*" $ do
             route   idRoute
             compile compressCssCompiler
@@ -163,10 +162,13 @@ main = do
         match "templates/*" $ compile templateBodyCompiler
 
         cats <- buildCategories "posts/**" (fromCapture "*/index.html")
+        tags <- buildTags "posts/**" (fromCapture "tags/*.html")
         let pageCtx = categoriesField "cats" cats <> defaultContext
             postCtx =  categoryField' "category" cats
+                    <> tagsField "tags" tags
                     <> dateField "date" "%B %e, %Y"
-                    <> modificationTimeField "modificationDate" "%B %e, %Y" <> defaultContext
+                    <> modificationTimeField "modificationDate" "%B %e, %Y" 
+                    <> defaultContext
 
         -- Post compilation
         match "posts/**" $ do
