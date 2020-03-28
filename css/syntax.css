@@ -66,6 +66,6 @@ code span.re { color: #2980b9; } /* RegionMarker */
 code span.sc { color: #3daee9; } /* SpecialChar */
 code span.ss { color: #da4453; } /* SpecialString */
 code span.st { color: #c5937c; } /* String */
-code span.va { color: #73c3ad; } /* Variable */
+code span.va { color: #cfcfc2; } /* Variable */
 code span.vs { color: #c5937c; } /* VerbatimString */
 code span.wa { color: #da4453; } /* Warning */
