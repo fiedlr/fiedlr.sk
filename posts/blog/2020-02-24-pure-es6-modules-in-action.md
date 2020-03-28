@@ -220,7 +220,7 @@ Even if we were doing everything everything thrice, it doesn't matter in a 3x3 g
 // Row and column checking
 const getRow = board => tileIndex => (firstOnRow => [
   board[firstOnRow], board[firstOnRow + 1], board[firstOnRow + 1 + 1]
-])(Math.floor(tileIndex / 3))
+])(3 * Math.floor(tileIndex / 3))
 
 const getCol = board => tileIndex => (firstOnCol => [
   board[firstOnCol], board[firstOnCol + 3], board[firstOnCol + 3 + 3]
