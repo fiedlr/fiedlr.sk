@@ -1,8 +1,8 @@
 ---
-title: Pure Modules in Action
+title: Pure ES6 Modules in Action
 author: Adam Fiedler
 teaser: "In an <a href='/blog/2019-08-15-pure-modules'>earlier post</a> I wrote
-about what I imagine under pure modules and reasons why one should write 
+about what I imagine under pure modules and listed reasons why one should write 
 as much JS code as possible in this paradigm. 
 Then I described some techniques how to get around potential pitfalls. 
 One thing is theory, another is practice. 
@@ -11,24 +11,27 @@ feasibility and advantages."
 ---
 
 TicTacToe has been a famous game known for centuries and incindentally, also used in the official [React tutorial](https://reactjs.org/tutorial/tutorial.html).
-We can surely revisit the tutorial and rethink it to show how separate game logic from event handling/rendering into a *pure* module.
+We can surely revisit the tutorial and rethink it to show how separate game logic into a *pure* module away from event handling/rendering.
 Once there, we will have all of the advantages mentioned in the article on pure modules.
-And that not only through separation of concerns: the pureness of the module will allow us to easily reason about the module, unit test it and parallelize it (as will be shown later).
+And that not only through separation of concerns: the pureness of the module will allow us to easily reason about the module, unit test it and parallelize it (as will hopefully be shown in a follow-up article).
 
 # Implementation
 
-A blueprint of the task is saved in [one of my repositaries](https://github.com/fiedlr/fp-workshop).
-Feel free to work it out on your own and compare your solution with mine (in scratch: you need to finish `game.js` and while doing that, use *arrow expressions* only!).
-If you have some experience with functional programming, by now you should have all the knowledge necessary to solve it.
-For the rest of us, we start first with how the model looks:
+How exactly can we implement the logic of TicTacToe in a pure module?
+We should first start thinking about the *model*, or more explicitly, the state of the game.
+It does not have much to do with pure modules per se, but it will greatly influence how our resulting code will look.
+This state will be maintained by a React component (why not).
+For our simple purposes, the React component will handle the state directly.
+That does not mean it couldn't be extracted to a Redux container or something similar.
+Our state will not be so different from the one in the React tutorial, besides for my personal preference of saving the played tiles with numbers:
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
 {
   // 0 stands for not played yet, 1 for player X, 2 for player O
   board: [
-    0,0,0, 
-    0,0,0, 
-    0,0,0
+    0, 0, 0, 
+    0, 0, 0, 
+    0, 0, 0
   ],
   // number of won games by each player
   scoreOfPlayer1: 0,
@@ -37,28 +40,74 @@ For the rest of us, we start first with how the model looks:
 ```
 
 Notice that the board is simply represented as an array preserving for each tile the id of the player who played it.
-We do not need to differentiate between rows and columns, that can be taken care of with CSS.
-The model attributes are passed to us *for us* in the corresponding functions that we will be implementing.
+There is no need to differentiate between rows and columns, that can be taken care of with CSS.
+We will pass the model attributes from our React component to the functions that we will be implementing in our pure module.
+The idea is that our React component will *only* handle events and re-rendering.
+In a way, it will serve as an integrated Redux reducer with the mouse clicking as our action.
+After getting a click on a tile, it will set a new state based on the previous state.
+That's it.
+The calculation of the new state will be treated in our pure module.
 
-We cannot change the model attributes *in any way*, they should be taken as constants -- we can only decide what we *return* in the functions.
-Remember also that since we will be implementing a pure module, we cannot use anything but *arrow expressions*.
+Our main component that will be 
 
-There are two essential functions needed to be done before the game starts functioning (pun intended):
+```{.javascript .numberLines .line-anchors startFrom="1"}
+import { Component } from 'react'
+import { nextStep, renderGame } from './game.pure'
+
+export default class TicTacToe extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      board: [
+        0, 0, 0, 
+        0, 0, 0, 
+        0, 0, 0
+      ],
+      scoreOfPlayer1: 0,
+      scoreOfPlayer2: 0
+    };
+
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick(tileId) {
+    this.setState(nextStep(tileId));
+  }
+
+  render() {
+    return renderGame(this.state.board)(this.onClick);
+  }
+}
+```
+
+We will also need a small functional component for the tiles. Let's call it `Tile.js` and it can look like this.
+
+```{.javascript .numberLines .line-anchors startFrom="1"}
+import React from 'react';
+
+export default function Tile(props) {
+  return <button className={"Tile" + props.playerId} onClick={props.onClick} />;
+}
+```
+
+The functions `nextStep` and `render` will be implemented in our pure module, which we can call `game.pure.js`.
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
 import React from 'react'
-import Tile from './tile'
+import Tile from './Tile'
 
-const render = board => handleClick => 
+const renderGame = board => handleClick => 
   <div className="TicTacToe"></div>
  
 const nextStep = tileId => (state, _) => state
 
-export {render, nextStep}
+export { renderGame, nextStep }
 ```
 
 The `render` function takes care of rendering the board according to its state given in `board` and a `handleClick` handler, which just calls `nextStep` when a tile is clicked and saves the new state into the model.
 In comparison, `nextStep` takes the id of the clicked tile (which we will need to generate somehow) and the `state`, which contains the model we just went over (the `_` argument stands for the React props which are not needed here), and returns a new state with the clicked tile fixed to the player that clicked it.
+We cannot change the model attributes *in any way*, they should be taken as constants -- we can only decide what we *return* in the functions.
 We want to use *arrow expressions only* to implement these functions.
 As will be soon evident, this is possible without any nasty hacking or tricks.
 
@@ -88,15 +137,15 @@ The `map` function also provides the index of the tile in the array, which will 
 We will pass the index into the `handleClick` function.
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
-const render = board => handleClick => 
-  <div className="TicTacToe">
+const renderGame = board => handleClick => 
+  <div className="TicTacToe">{
     board.map((tilePlayedBy, tileIndex) => 
       <Tile 
         playerId={tilePlayedBy} 
         onClick={() => handleClick(tileIndex)} 
-        id={id} // for React purposes
+        key={tileIndex} // for React purposes
       />)
-  </div> 
+  }</div> 
 ```
 
 The `Tile` component handles the styles for us, which makes the `render` function finished.
@@ -143,7 +192,7 @@ const getCol = board => tileIndex => (colId => [
 ])(tileIndex % 3)
 
 const winnerRowOrColExists = board => winCombo =>
-  board.reduce((_, _, tileIndex) => 
+  board.reduce((_, __, tileIndex) => 
     getRow(board, tileIndex) === winCombo || 
     getCol(board, tileIndex) === winCombo,
     False
@@ -176,7 +225,7 @@ The rest of the state remains unchanged.
 const newState = state => clickedTileId => playerOnTurn => ({
   ...state,
   board: state.board.map((_, tileIndex) => 
-    tileIndex == clickedTileId 
+    tileIndex === clickedTileId 
     ? playerOnTurn
     : state.board[clickedTileId])
 })
@@ -187,9 +236,10 @@ We just need to return a reset game with incremented score of the winner.
 This is straightforward:
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
-const newGame = board => winnerId => ({
-  board: board.fill(0),
-  `scoreOfPlayer${winnerId}`: state[`scoreOfPlayer${winnerId}`] + 1
+const newGame = state => winnerId => ({
+  ...state,
+  board: state.board.fill(0),
+  [`scoreOfPlayer${winnerId}`]: state[`scoreOfPlayer${winnerId}`] + 1
 })
 ```
 
@@ -204,14 +254,13 @@ By now it should be obvious that in order to achieve this, we need functions `ne
 It should also be obvious now why they take some arguments, which they would not really need (such as `playerOnTurn`): among others, to prevent recounting and simplifying unit testing.
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
-const nextStep = tileId => (state, _) => state => (
+const nextStep = tileId => (state, _) => (
   playerOnTurn => (
     winnerId => !winnerId 
       ? newState(state, tileId, playerOnTurn) 
-      : newGame(board, winnerId)
+      : newGame(state, winnerId)
     )(getWinnerId(state.board, playerOnTurn))
   )(getIdOfPlayerOnTurn(state.board))
-)
 ```
 
 That's really all there is to it in terms of implementation.
@@ -219,7 +268,3 @@ Notice how a seemingly easy function turned into quite a beast.
 We wouldn't have made it without function decomposition, which is *essential*
 not only in programming but especially in FP.
 The whole result can be seen running in the following snippet.
-
-# Testing
-
-# Parallelization?
