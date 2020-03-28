@@ -51,7 +51,7 @@ The calculation of the new state will be treated in our pure module.
 Our main component that will be 
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
-import { Component } from 'react'
+import React, { Component } from 'react'
 import { nextStep, renderGame } from './game.pure'
 
 export default class TicTacToe extends Component {
@@ -76,7 +76,11 @@ export default class TicTacToe extends Component {
   }
 
   render() {
-    return renderGame(this.state.board)(this.onClick);
+    return <div className="TicTacToe">
+      {renderGame(this.state.board)(this.onClick)}
+      <p>Player X: {this.state.scoreOfPlayer1} wins</p>
+      <p>Player O: {this.state.scoreOfPlayer2} wins</p>
+    </div>;
   }
 }
 ```
@@ -98,7 +102,7 @@ import React from 'react'
 import Tile from './Tile'
 
 const renderGame = board => handleClick => 
-  <div className="TicTacToe"></div>
+  <div className="game"></div>
  
 const nextStep = tileId => (state, _) => state
 
@@ -162,14 +166,14 @@ This is perfect for using function decomposition not to get lost in the process.
 4. Resetting the game and incrementing the score of the winner ~> `newGame`
 
 ### `getIdOfPlayerOnTurn`
-This one is probably the least obvious.
+This one is probably the least plain to see.
 Since we cannot pass any helper variable to tell us whose turn it is, we must only blindly believe in the insight of the blueprint's creator (me :-D) and assume that the data we have in hand tell us already.
 This is indeed true: the board reveals how many turns we have so far played in the number of non-zero tiles. 
 And since there are two players, player X will play each *even* turn and player O each *odd* turn. 
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
 const getNumberOfTurns = board => board.reduce(
-  (tilePlayedBy, count) => count + Math.ceil(tilePlayedBy / 2),
+  (count, tilePlayedBy) => count + Math.ceil(tilePlayedBy / 2),
   0
 )
 
@@ -177,38 +181,47 @@ const getIdOfPlayerOnTurn = board => getNumberOfTurns(board) % 2 + 1
 ```
 
 ### `getWinnerId`
-All of us have probably played TicTacToe in some point of our lives.
-We need three X's (O's) in a row (~> `getRow`), column (~> `getCol`), or a diagonal (~> `getDia`).
-If in one of these cases there are three identical playerIds to the playerId on turn, we have a winner with this id (`winnerRowOrColExists`)
-We use an IIFE to create a constant `winnerArray` to be compared with both of a given type's neighbors and save us the trouble to compare them separately.
+All of us have probably played 3x3 TicTacToe in some point of our lives.
+We need three X's (O's) in a row (~> `getRow`), column (~> `getCol`), or a diagonal (~> `getDiag`).
+If in one of these cases there are three identical playerIds to the playerId on turn, we have a winner with this id (`winnerRowOrColExists`).
+
+Because Javascript is dumb enough not to have any built-in array comparator, we'll create a simple checker for containing a value of *trivial* data types called `containsOnlyVal`.
+We need only check if a row, column or a diagonal contains the `playerOnTurn`.
+Here the magic of curried functions will be made evident: using our IIFE trick, we create a local function called `isWinning`, which checks if an array contains only `playerOnTurn` values.
+`isWinning` is nothing but a partially applied `containsOnlyVal`!
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
-const getRow = board => tileIndex => (rowId => [
-  board[rowId], board[rowId + 1], board[rowId + 2]
-])(tileIndex / 3)
+const getWinnerId = board => playerOnTurn => (isWinning => 
+  winnerRowOrColExists(board)(isWinning) ||
+  winnerDiagonalExists(board)(isWinning)  ? playerOnTurn : 0
+)(containsOnlyVal(playerOnTurn))
 
-const getCol = board => tileIndex => (colId => [
-  board[colId], board[colId + 3], board[colId + 6]
+const containsOnlyVal = val => arr => 
+  arr.reduce((prev, current) => prev && current === val, true)
+
+// Row and column checking
+const getRow = board => tileIndex => (firstOnRow => [
+  board[firstOnRow], board[firstOnRow + 1], board[firstOnRow + 1 + 1]
+])(Math.floor(tileIndex / 3))
+
+const getCol = board => tileIndex => (firstOnCol => [
+  board[firstOnCol], board[firstOnCol + 3], board[firstOnCol + 3 + 3]
 ])(tileIndex % 3)
 
-const winnerRowOrColExists = board => winCombo =>
-  board.reduce((_, __, tileIndex) => 
-    getRow(board, tileIndex) === winCombo || 
-    getCol(board, tileIndex) === winCombo,
-    False
+const winnerRowOrColExists = board => isWinning =>
+  board.reduce((prev, _, tileIndex) => prev
+    || isWinning(getRow(board)(tileIndex))
+    || isWinning(getCol(board)(tileIndex)),
+    false
   )
 
-const getDia1 = board => [board[0], board[4], board[8]]
+// Diagonal checking
+const getDiag1 = board => [board[0], board[4], board[8]]
 
-const getDia2 = board => [board[2], board[4], board[6]]
+const getDiag2 = board => [board[2], board[4], board[6]]
 
-const winnerDiagonalExists = board => winCombo => 
-  getDia1(board) === winCombo || getDia2(board) === winCombo
-
-const getWinnerId = board => playerOnTurn => (winCombo => 
-  winnerRowOrColExists(board, winCombo) ||
-  winnerDiagonalExists(board, winCombo)  ? playerOnTurn : 0
-)([playerOnTurn, playerOnTurn, playerOnTurn])
+const winnerDiagonalExists = board => isWinning => 
+  isWinning(getDiag1(board)) || isWinning(getDiag2(board))
 ```
 
 Although `getWinnerId` is a little more inefficient that it need be, for brevity
@@ -218,16 +231,16 @@ If we needed bigger grids, we could use several techniques (e.g. lazy evaluation
 ### `newState`
 This function should take the id of the clicked tile and returning a *new state* with a board, where the given tile is marked with the player whose turn it was.
 We *do not change* the original state in any way!
-Since we cannot use any loops, we'll just map over the original board and return one where the clicked tile has the assigned playerId.
+Since we cannot use any loops, we'll just map over the original board and return one where the clicked tile has the corresponding playerId if the tile hasn't been played yet.
 The rest of the state remains unchanged.
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
 const newState = state => clickedTileId => playerOnTurn => ({
   ...state,
   board: state.board.map((_, tileIndex) => 
-    tileIndex === clickedTileId 
+    tileIndex === clickedTileId && !state.board[tileIndex]
     ? playerOnTurn
-    : state.board[clickedTileId])
+    : state.board[tileIndex])
 })
 ```
 
@@ -251,20 +264,30 @@ Each turn will look as follows.
 2. Otherwise start a new game.
 
 By now it should be obvious that in order to achieve this, we need functions `newState`, `newGame` we've just implemented and pass them the arguments that they take.
-It should also be obvious now why they take some arguments, which they would not really need (such as `playerOnTurn`): among others, to prevent recounting and simplifying unit testing.
+It should also be obvious now why they take some arguments, which they would not really need (such as `playerOnTurn`): among others, to prevent recounting and simplify unit testing. 
 
 ```{.javascript .numberLines .line-anchors startFrom="1"}
 const nextStep = tileId => (state, _) => (
   playerOnTurn => (
-    winnerId => !winnerId 
-      ? newState(state, tileId, playerOnTurn) 
-      : newGame(state, winnerId)
-    )(getWinnerId(state.board, playerOnTurn))
+    newState => (
+      winnerId => !winnerId
+        ? newState
+        : newGame(state)(winnerId)
+      )(getWinnerId(newState.board)(playerOnTurn))
+    )(newState(state)(tileId)(playerOnTurn))
   )(getIdOfPlayerOnTurn(state.board))
 ```
+
+Notice how we need to count the newState *before* deciding whether to return it or the new game.
+This is because all of the functions we've implemented actually count with the fact that a turn has just been made.
 
 That's really all there is to it in terms of implementation.
 Notice how a seemingly easy function turned into quite a beast.
 We wouldn't have made it without function decomposition, which is *essential*
 not only in programming but especially in FP.
 The whole result can be seen running in the following snippet.
+
+<div class="glitch-embed-wrap" style="height: 420px; width: 100%;"><iframe
+    src="https://glitch.com/embed/#!/embed/pm-tictactoe?path=src/game.pure.js&previewSize=100"
+    title="pm-tictactoe on Glitch"
+    style="height: 100%; width: 100%; border: 0;"></iframe></div>
