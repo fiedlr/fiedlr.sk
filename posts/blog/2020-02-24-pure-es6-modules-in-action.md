@@ -217,7 +217,6 @@ I'm not really sure here if JS behaves lazily in the following uses of `reduce`.
 Even if we were doing everything everything thrice, it doesn't matter in a 3x3 grid.
 
 ```javascript
-// Row and column checking
 const getRow = board => tileIndex => (firstOnRow => [
   board[firstOnRow], board[firstOnRow + 1], board[firstOnRow + 1 + 1]
 ])(3 * Math.floor(tileIndex / 3))
@@ -239,7 +238,6 @@ If we had bigger grids, we could abstract this in a similar way as we abstracted
 There would be some problems with boundaries though, hence the simple attitude in this case.
 
 ```javascript
-// Diagonal checking
 const getDiag1 = board => [board[0], board[4], board[8]]
 
 const getDiag2 = board => [board[2], board[4], board[6]]
