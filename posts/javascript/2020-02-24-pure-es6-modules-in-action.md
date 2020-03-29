@@ -8,6 +8,7 @@ Then I described some techniques how to get around potential pitfalls.
 One thing is theory, another is practice. 
 Let's look at one particular example of using pure modules to demonstrate their 
 feasibility and advantages."
+modified: true
 ---
 
 TicTacToe has been a famous game known for centuries and incindentally, also used in the official [React tutorial](https://reactjs.org/tutorial/tutorial.html).
@@ -52,38 +53,28 @@ The calculation of the new state will be treated in our pure module.
 
 First let us briefly overview the implementation of our main React component.
 
-```{.javascript .numberLines .line-anchors startFrom="1"}
-import React, { Component } from 'react'
+```{.javascript .numberLines .line-anchors .nowrap startFrom="1"}
+import React, { useState } from 'react'
 import { nextStep, renderGame } from './game.pure'
 
-export default class TicTacToe extends Component {
-  constructor() {
-    super();
+export default function TicTacToe(props) {
+  const [state, updateState] = useState({
+    board: [
+      0, 0, 0, 
+      0, 0, 0, 
+      0, 0, 0
+    ],
+    scoreOfPlayer1: 0,
+    scoreOfPlayer2: 0
+  });
+  
+  const onClick = tileId => updateState(nextStep(tileId));
 
-    this.state = {
-      board: [
-        0, 0, 0, 
-        0, 0, 0, 
-        0, 0, 0
-      ],
-      scoreOfPlayer1: 0,
-      scoreOfPlayer2: 0
-    };
-
-    this.onClick = this.onClick.bind(this);
-  }
-
-  onClick(tileId) {
-    this.setState(nextStep(tileId));
-  }
-
-  render() {
-    return <div className="TicTacToe">
-      {renderGame(this.state.board)(this.onClick)}
-      <p>Player X: {this.state.scoreOfPlayer1} wins</p>
-      <p>Player O: {this.state.scoreOfPlayer2} wins</p>
-    </div>;
-  }
+  return <div className="TicTacToe">
+    {renderGame(state.board)(onClick)}
+    <p>Player X: {state.scoreOfPlayer1} wins</p>
+    <p>Player O: {state.scoreOfPlayer2} wins</p>
+  </div>;
 }
 ```
 
@@ -115,7 +106,10 @@ We first need a small functional component which will be used for Tile rendering
 import React from 'react';
 
 export default function Tile(props) {
-  return <button className={"Tile" + props.playerId} onClick={props.onClick} />;
+  return <button 
+          className={"Tile" + props.playerId} 
+          onClick={props.onClick} 
+        />;
 }
 ```
 
@@ -208,8 +202,7 @@ const getWinnerId = board => playerOnTurn => (isWinning =>
   winnerDiagonalExists(board)(isWinning)  ? playerOnTurn : 0
 )(containsOnlyVal(playerOnTurn))
 
-const containsOnlyVal = val => arr => 
-  arr.reduce((prev, current) => prev && current === val, true)
+const containsOnlyVal = val => arr => arr.every(elem => elem === val)
 ```
 
 For rows and columns, we'll go through each tile and check its corresponding row and column, if it satisfies `isWinning`. 
