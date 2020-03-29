@@ -23,6 +23,9 @@ import qualified Text.Blaze.Html5.Attributes     as A
 cslTemplate :: String
 cslTemplate = "default"
 
+defaultTeaser :: String
+defaultTeaser = "coding a bit"
+
 --------------------------------------------------------------------------------
 writerOptions :: Maybe String -> WriterOptions
 writerOptions Nothing = defaultHakyllWriterOptions 
@@ -163,9 +166,10 @@ main = do
 
         cats <- buildCategories "posts/**" (fromCapture "*/index.html")
         tags <- buildTags "posts/**" (fromCapture "tags/*.html")
-        let pageCtx = categoriesField "cats" cats <> defaultContext
-            postCtx =  categoryField' "category" cats
+        let pageCtx = categoriesField "cats" cats
                     <> tagsField "tags" tags
+                    <> defaultContext
+            postCtx =  categoryField' "category" cats
                     <> dateField "date" "%B %e, %Y"
                     <> modificationTimeField "modificationDate" "%B %e, %Y" 
                     <> defaultContext
@@ -180,16 +184,18 @@ main = do
                 mathJax    <- getMetadataField matchId "mathjax"
                 biblioFile <- getMetadataField matchId "bibliography"
                 nsecs      <- getMetadataField matchId "numbersections"
+                teaser     <- getMetadataField matchId "teaser"
 
                 let pageCtx' = if matchExt == ".tex" && isJust matchUrl
                                then constField "pdf" (
                                    dropExtension (fromJust matchUrl) ++ ".pdf"
                                ) <> pageCtx
                                else pageCtx
+                    descField = constField "teaser" $ maybe defaultTeaser id teaser
                             in
                     (pandocCompile mathJax biblioFile nsecs
                     >>= loadAndApplyTemplate "templates/post.html"    postCtx
-                    >>= loadAndApplyTemplate "templates/default.html" pageCtx'
+                    >>= loadAndApplyTemplate "templates/default.html" (descField <> pageCtx')
                     >>= relativizeUrls >>= removeHTMLExtensions)
 
         -- TeX pdf compilation
@@ -223,6 +229,7 @@ main = do
                 let categoryName = capitalizeFirst tag
                     archiveCtx   = listField "posts" postCtx (return posts)
                                 <> constField "title" categoryName
+                                <> constField "teaser" defaultTeaser
                                 <> pageCtx
 
                 makeItem ""
@@ -234,9 +241,11 @@ main = do
         match "pages/**" $ do
             route $ gsubRoute "pages/" (const "") `composeRoutes` setExtension ".html"
             compile $ do
+                let descField = constField "teaser" defaultTeaser
+                
                 getResourceBody
                     >>= applyAsTemplate pageCtx
-                    >>= loadAndApplyTemplate "templates/default.html" pageCtx
+                    >>= loadAndApplyTemplate "templates/default.html" (descField <> pageCtx)
                     >>= relativizeUrls >>= removeHTMLExtensions
 
         -- Generate homepage
@@ -244,7 +253,8 @@ main = do
             route idRoute
             compile $ do
                 posts <- recentFirst =<< loadAll ("posts/**" .&&. hasNoVersion)
-                let indexCtx = listField "posts" postCtx (return $ take 5 posts) 
+                let indexCtx = listField "posts" postCtx (return $ take 5 posts)
+                            <> constField "teaser" defaultTeaser
                             <> pageCtx
 
                 getResourceBody
