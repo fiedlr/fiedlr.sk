@@ -112,7 +112,7 @@ nav a {
   font-size: 1.8rem;
   color: #919191;
   text-decoration: none;
-  text-transform: uppercase;
+  text-transform: lowercase;
   display: inline-block;
   margin: 0 0.6rem;
 }
@@ -177,12 +177,8 @@ ul {
 }
 
 main {
-  padding: 0 5%;
+  padding: 2rem 5%;
   min-height: 66%;
-}
-
-article {
-  margin-bottom: 4rem;
 }
 
 article .meta {

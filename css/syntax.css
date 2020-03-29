@@ -1,4 +1,4 @@
-code { white-space: pre-wrap; font-family: 'Railway', monospace; font-weight: normal; background: #232629; color: #cfcfc2; padding: 0 0.4em; }
+code { font-family: 'Railway', monospace; font-weight: normal; background: #232629; color: #cfcfc2; padding: 0 0.4em; }
 span.smallcaps { font-variant: small-caps; }
 span.underline { text-decoration: underline; }
 div.column { display: inline-block; vertical-align: top; width: 50%; }
@@ -9,7 +9,8 @@ a.sourceLine { display: inline-block; line-height: 1.2; font-size: 1em; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; background: none; padding: 0; }
+code.sourceCode { white-space: pre-wrap; box-decoration-break: clone; -webkit-box-decoration-break: clone; position: relative; background: none; padding: 0; }
+.nowrap code.sourceCode { white-space: pre; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; padding: 5px; }
 @media screen {
