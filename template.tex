@@ -6,6 +6,9 @@ $endif$$if(dir)$$if(latex-dir-rtl)$
 \PassOptionsToPackage{RTLdocument}{bidi}
 $endif$$endif$%
 \documentclass[$if(fontsize)$$fontsize$,$endif$$if(lang)$$babel-lang$,$endif$$if(papersize)$$papersize$paper,$endif$$if(beamer)$ignorenonframetext,$if(handout)$handout,$endif$$if(aspectratio)$aspectratio=$aspectratio$,$endif$$endif$$for(classoption)$$classoption$$sep$,$endfor$]{$documentclass$}
+
+
+
 $if(beamer)$
 $if(background-image)$
 \usebackgroundtemplate{%
@@ -27,19 +30,24 @@ $endif$
 $if(fontfamily)$
 \usepackage[$for(fontfamilyoptions)$$fontfamilyoptions$$sep$,$endfor$]{$fontfamily$}
 $else$
-\usepackage{mathpazo}
+\usepackage[sc,osf]{mathpazo}
+\linespread{1.025} % Palatino leads a little more leading
+% Euler for math and numbers
+\usepackage[euler-digits,euler-hat-accent, small]{eulervm} % math and numbers
 $endif$
 $if(linestretch)$
 \usepackage{setspace}
 \setstretch{$linestretch$}
 $endif$
-\usepackage{amssymb,amsmath}
+\usepackage{amssymb,amsmath,amsthm,amsfonts}
+\usepackage[DIV=calc]{typearea} % cca 66 chars per line
 \usepackage{ifxetex,ifluatex}
 \usepackage{fixltx2e} % provides \textsubscript
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[$if(fontenc)$$fontenc$$else$T1$endif$]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provides euro and other symbols
+  \usepackage{bm} % load after all math to give access to bold math
 \else % if luatex or xelatex
 $if(mathspec)$
   \ifxetex
