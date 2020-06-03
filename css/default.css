@@ -45,8 +45,6 @@ header {
 	background: transparent;
 	color: transparent;
 	overflow: hidden;
-	-webkit-transition: 500ms;
-	transition: 500ms;
 }
 
 .caption {
