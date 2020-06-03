@@ -17,7 +17,7 @@ body {
   height: 100%;
   background: #303030;
 	color: #ededed;
-	font-family: 'Railway', sans-serif;
+	font-family: 'Source Sans Pro', sans-serif;
 	font-size: 1.4rem;
   line-height: 1.4;
   margin: 0;
@@ -70,7 +70,7 @@ header {
 }
 
 .pdf {
-  display: inline-block; padding: 0.1em 0.4em; background: #e67360; color: #fff; border-radius: 10%; text-transform: none; text-decoration: none; font-weight: bold; font-size: 0.7em;
+  display: inline-block; padding: 0.1em 0.4em; background: #e67360; color: #fff; border-radius: 10%; text-transform: none; text-decoration: none; font-weight: 700; font-size: 0.7em;
   vertical-align: 0.7em;
 }
 
@@ -144,8 +144,9 @@ button {
 	color: #fff;
 }
 
+h1, h2, h3 { font-weight: 700; }
+
 h1 {
-	font-weight: bold;
   font-size: 1.8em;
   text-transform: none;
   color: #fff;
@@ -165,11 +166,10 @@ h3 {
 
 .title h1 {
   display: inline;
-	font-weight: bolder;
 	font-size: 2em;
 	color: #4fb9e2;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.25em;
 }
 
 ul {
@@ -191,6 +191,10 @@ p, li {
 	font-size: 1.7rem;
   line-height: 2.5rem;
   max-width: 60rem;
+}
+
+figure img {
+  max-width: 100%;
 }
 
 /* Desktop layout */
