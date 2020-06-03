@@ -193,6 +193,10 @@ p, li {
   max-width: 60rem;
 }
 
+figure {
+  text-align: center;
+}
+
 figure img {
   max-width: 100%;
 }
@@ -255,8 +259,8 @@ figure img {
   }
 }
 
-/* Footer collapse fix */
-@media (min-width: 920px) and (min-height: 426px) {
+/* Portrait and footer collapse fix */
+@media (min-width: 1200px) and (min-height: 426px) {
   figure {
     float: right;
   }
