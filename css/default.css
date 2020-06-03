@@ -193,6 +193,11 @@ p, li {
   max-width: 60rem;
 }
 
+.portrait {
+  width: 400px;
+  height: auto;
+}
+
 figure {
   text-align: center;
 }
