@@ -131,11 +131,11 @@ a:hover {
   color: #e67360;
 }
 
-.body a {
+p a {
   border-bottom: 1px solid #ededed;
 }
 
-.body a:hover {
+p a:hover {
   border-bottom: 1px solid #e67360;
 }
 
