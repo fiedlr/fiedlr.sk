@@ -166,9 +166,7 @@ $endif$
 $if(verbatim-in-note)$
 \VerbatimFootnotes % allows verbatim text in footnotes
 $endif$
-$if(geometry)$
-\usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
-$endif$
+\usepackage[top=1in,bottom=1.25in,left=2in,right=2in]{geometry}
 $if(beamer)$
 \newif\ifbibliography
 $endif$

@@ -52,7 +52,7 @@ main = do
                 posts <- recentFirst =<< loadAll (pattern .&&. hasNoVersion)
                 let archiveCtx   = listField "posts" postCtx (return posts)
                                 <> constField "title" (capitalizeFirst cat)
-                                <> constField "teaser" defaultTeaser
+                                <> constField "desc" defaultTeaser
                                 <> pageCtx
 
                 makeItem ""
@@ -67,7 +67,7 @@ main = do
                 posts <- recentFirst =<< loadAll (pattern .&&. hasNoVersion)
                 let archiveCtx   = listField "posts" postCtx (return posts)
                                 <> constField "title" ('#' : tag)
-                                <> constField "teaser" defaultTeaser
+                                <> constField "desc" defaultTeaser
                                 <> pageCtx
 
                 makeItem ""
@@ -88,18 +88,20 @@ main = do
                 nsecs      <- getMetadataField matchId "numbersections"
                 teaser     <- getMetadataField matchId "teaser"
 
-                let postCtx' = tagsField "tags" tags <> postCtx
-                let pageCtx' = if matchExt == ".tex" && isJust matchUrl
+                let excerpt  = maybe defaultTeaser id teaser
+                    postCtx' = tagsField "tags" tags <> postCtx
+                    pageCtx' = (if matchExt == ".tex" && isJust matchUrl
                                then constField "pdf" (
-                                   dropExtension (fromJust matchUrl) ++ ".pdf"
+                                   dropExtension (fromJust matchUrl) <.> "pdf"
                                ) <> pageCtx
-                               else pageCtx
-                    descField = constField "teaser" $ maybe defaultTeaser id teaser
-                            in
-                    (Biblio.pandocCompile mathJax biblioFile nsecs
+                               else pageCtx)
+                            <> constField "teaser" excerpt
+                            <> constField "desc"   (stripTags excerpt)
+
+                Biblio.pandocCompile mathJax biblioFile nsecs
                     >>= loadAndApplyTemplate "templates/post.html"    postCtx'
-                    >>= loadAndApplyTemplate "templates/default.html" (descField <> pageCtx')
-                    >>= relativizeUrls >>= removeHTMLExtensions)
+                    >>= loadAndApplyTemplate "templates/default.html" pageCtx'
+                    >>= relativizeUrls >>= removeHTMLExtensions
 
         -- TeX pdf compilation
         match "posts/**.tex" $ version "pdf" $ do
@@ -120,7 +122,7 @@ main = do
         match "pages/**" $ do
             route $ gsubRoute "pages/" (const "") `composeRoutes` setExtension ".html"
             compile $ do
-                let pageCtx' = constField "teaser" defaultTeaser
+                let pageCtx' = constField "desc" defaultTeaser
                             <> tagCloudField "tagCloud" 20 80 tags
                             <> pageCtx
 
@@ -135,7 +137,7 @@ main = do
             compile $ do
                 posts <- recentFirst =<< loadAll ("posts/**" .&&. hasNoVersion)
                 let indexCtx = listField "posts" postCtx (return $ take 5 posts)
-                            <> constField "teaser" defaultTeaser
+                            <> constField "desc" defaultTeaser
                             <> pageCtx
 
                 getResourceBody
