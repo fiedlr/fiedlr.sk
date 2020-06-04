@@ -1,7 +1,6 @@
 ---
 title: Is JavaScript Ready for Pure ES6 Modules?
 author: Adam Fiedler
-modified: true
 teaser: "Functional programming (FP) is not new to JavaScript.
 One proof of that might be the fact that there exist several helpful FP libraries like <a href='http://ramdajs.com'>Ramda</a>.
 However, the real question is if JS itself evolved enough to write <em>isolated</em> pieces of code in this paradigm."
