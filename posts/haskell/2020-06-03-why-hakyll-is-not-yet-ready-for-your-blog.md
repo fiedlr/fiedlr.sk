@@ -5,6 +5,8 @@ teaser: "I never believed I would be writing this. Don't get me wrong. I love bo
 Needless to say that this very blog runs on Hakyll.
 However, nothing can advance without somebody laying out loud the things that don't work.
 And with Hakyll it seems like such a list is long overdue."
+modified: true
+tags: hakyll
 ---
 
 TLDR: I've spent countless of hours to make *basic* things work and I *still* do.
@@ -65,7 +67,10 @@ Nice, that actually exists too with `.line-anchors`...
 But then you open up your slick blog and find out the styling is screwed up again.
 And don't even try using wordwrapping because you'll screw it up yet again!
 
-To have all of this, you have to add like five options to every single markdown block of your code (something like ` ```{.javascript .numberLines .line-anchors .nowrap startFrom="1"}`).
+To have all of this, you have to add like five options to every single markdown block of your code, something like
+
+    ```{.javascript .numberLines .line-anchors .nowrap startFrom="1"}
+
 Last but not least, expect that it works perfect only for Haskell.
 Any other language is sooner or later doomed to some highlighting glitches you have to hack yourself out of.
 
@@ -87,7 +92,8 @@ If I remember correctly, what saved me in the end was really just trying how Pan
 I wish I had known earlier that playing with Pandoc is the first thing to do when you want something more from the compilation.
 
 When I bother to use a TeX file and can write little except for some equations, I would at least expect citations to work.
-Bare fact: they don't with references.
+Bare fact: they don't with linked references.
+References without links are useless (you won't scroll up and down everytime you see one).
 More hours (that would've been weeks if somebody hadn't [drawn out a path for me](https://github.com/jaspervdj/hakyll/issues/471)).
 Do you still think it's over?
 There's no `References` header over them.
@@ -103,7 +109,7 @@ PDF is not really that superadvanced (come on, we're talking Pandoc here).
 ## Embedding Haskell in templates
 Would you like some ad-hoc logic in the templates?
 You're out of luck.
-The templates support trivial `if` blocks that check for a truth value of a [field](https://jaspervdj.be/hakyll/reference/Hakyll-Web-Template.html), optionally with an `else` block, plus `for` loops for ranging over list-ish fields (otherwise it would naturally be really painful to template a list).
+The templates support trivial `if` blocks that check for the existence of a [field](https://jaspervdj.be/hakyll/reference/Hakyll-Web-Template.html) value, optionally with an `else` block, plus `for` loops for ranging over list-ish fields (otherwise it would naturally be really painful to template a list).
 Great, but think of what happens when you need a new field (almost all the time).
 You have to *recompile* the site executable *every* time.
 Can you imagine how long that takes?
@@ -132,12 +138,14 @@ There actually is a logic for categories, obfuscated in the [tags module](https:
 I know that categories are tags in a way, but this simply smells bad practice in coding (no matter what language).
 Why not create a submodule?
 Anyhow, it's funny how it says more advanced users have to use `buildTagsWith`.
-Almost any user does is the reality.
+Almost any user does, actually.
 Last time I checked, there's no templating options!
 No classes whatsoever to style the links according to where you are...
 And who actually wants to have categories separated with commas?
 You usually have categories in a *menu*.
+Why cannot they be implemented like a listish field that can be iterated over and templated?
 Even the category link in `categoryField` doesn't work as expected.
+The name starts with lower case. Argh, I don't want to use `text-transform: capitalize`...
 I gave up and wrote another custom module.
 
 What's sad now, though, is that tags somehow don't work *in parallel* with categories.
@@ -146,39 +154,42 @@ Nothing is rendered.
 Yes, you guess right.
 It was again a couple of hours of wasted research because this one I haven't solved yet.
 Might be a bug.
+*EDIT: It seems I had to put `tagsField` inside a rule for post compilation.
+I thought Hakyll was taking care of ordering for me.
+Well, at least I can tags things now.*
 
 # Solutions?
 It is possible that many of my objections are caused due to my lack of thorough understanding of the Hakyll ecosystem.
 However, I believe that does not void most of my arguments.
 An opensourced code is useful only insofar as it is useful for *beginners*.
 Nobody should spend hours digging just to create a simple blog.
-Let me express my proposals, and that in the we-form. I feel already like part of this great Hakyll community just having to solve all of this (even though I have not contributed a single line of code yet).
+Let me express my proposals, and that in the we-form.
+I feel already like part of this great Hakyll community just having to solve all of this (even though I have not contributed a single line of code yet).
 
 Either Hakyll strives to be minimalistic, in that case, we need a higher level fork that would be well suited for the basic Haskeller.
 Or we need to make Hakyll API more granular and modular.
 Most importantly, while creating a *better documentation*.
-A couple of not-much-sequential tutorials with a Haddock doc is not enough.
+A couple of not-much-related tutorials with a Haddock doc is not enough.
 Hakyll is not such a popular thing that you find something on SO either.
 
 Moreover, something more elaborate and concrete, in the spirit of the [React TicTacToe tutorial](https://reactjs.org/tutorial/tutorial.html), would be useful.
-We have the excellent [Robert Pearce's series](https://robertwpearce.com/hakyll-pt-1-setup-and-initial-customization.html),
-yet I do not really feel it covers the really basic stuff.
-Generating custom post filenames from a title slug? Why not just imitate the hierarchy as I set it up?
-Maybe I'm just weird, but I would look first how a *usual* blog looks and start writing this kind of tutorials for beginners.
+We have the excellent [Robert Pearce's series](https://robertwpearce.com/hakyll-pt-1-setup-and-initial-customization.html), yet I do not really feel it covers the really basic stuff.
+Generating custom post filenames from a title slug? Why not just imitate the hierarchy as I've set it up?
+Maybe I'm weird, but I would check first how a *usual* blog looks and only then start writing this kind of tutorials for beginners.
 In the [tutorials](https://jaspervdj.be/hakyll/tutorials.html) I can see Cassius templating, deployments, external code inclusion, CircleCI stuff.
-Is this really basic?
+Is this really what most of us need?
 
 I guess the first thing a beginner would think of is social media.
 We live in 2020 and there's no easy plugin for social media management.
-That means not just social media buttons but OpenGraph set-up, Google friendliness, etc.
-I've just looked it up and I found this [post](https://groups.google.com/forum/#!topic/hakyll/gpSIeTxRHpo).
-I understand that Hakyll is mostly maintained by [one guy](https://jaspervdj.be) (kudos to Jasper!) and it's great that he tries to be helpful.
+That means not just social media buttons, you have to deal with OpenGraph, Google friendliness, etc.
+I've just looked it up and found this [post](https://groups.google.com/forum/#!topic/hakyll/gpSIeTxRHpo).
+I understand that Hakyll is mostly maintained by [one guy](https://jaspervdj.be)(kudos to Jasper!) and it's great that he tries to be helpful.
 But there's not just one Hakyll blog and nobody really thought of integrating this into Hakyll?
 I mean who cares about [RSS feeds anymore](https://jaspervdj.be/hakyll/tutorials/05-snapshots-feeds.html)?
-If you want somebody to actually read your blog, I'm guessing a minority will come from RSS.
+If you want somebody to actually read your blog, I bet that a minority will come from RSS.
 
 To end this whining and sum everything up, Hakyll has taught me many things about Haskell and really became sort of a hobby.
-It is fun that I can implement many things on my own, but I thought the can would be only for more advanced stuff.
-Yet I can imagine a new-comer can become easily demotivated.
+It is fun that I implement many things on my own, but I thought it would be only for the more advanced stuff.
+I can easily imagine a newcomer getting easily demotivated.
 What's worse, I can only hope that I will have finished tweaking with the basics by the time I have a full-time job.
-I should better start now, there's still at least sitemaps, pagination, social media management...
+I should better start now, there's still those sitemaps, pagination, social media management...
