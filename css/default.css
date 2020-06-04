@@ -68,7 +68,7 @@ header {
 }
 
 .pdf {
-  display: inline-block; padding: 0.1em 0.4em; background: #e67360; color: #fff; border-radius: 10%; text-transform: none; text-decoration: none; font-weight: 700; font-size: 0.7em;
+  display: inline-block; padding: 0.1em 0.4em; background: #e67360; color: #fff; border-radius: 10%; text-transform: none; font-weight: 700; font-size: 0.7em;
   vertical-align: 0.7em;
 }
 
@@ -109,7 +109,6 @@ nav {
 nav a {
   font-size: 1.8rem;
   color: #919191;
-  text-decoration: none;
   text-transform: lowercase;
   display: inline-block;
   margin: 0 0.6rem;
@@ -125,15 +124,19 @@ footer {
 
 a {
   color: #ededed;
-	text-decoration: underline;
+  text-decoration: none;
 }
 
 a:hover {
-	color: #e67360;
+  color: #e67360;
 }
 
-h1 a {
-  text-decoration: none;
+.body a {
+  border-bottom: 1px solid #ededed;
+}
+
+.body a:hover {
+  border-bottom: 1px solid #e67360;
 }
 
 button {
@@ -197,6 +200,7 @@ p, li {
 }
 
 figure {
+  max-width: 100%;
   text-align: center;
 }
 
