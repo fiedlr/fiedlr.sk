@@ -5,13 +5,14 @@ modified: true
 teaser: "Functional programming (FP) is not new to JavaScript.
 One proof of that might be the fact that there exist several helpful FP libraries like <a href='http://ramdajs.com'>Ramda</a>.
 However, the real question is if JS itself evolved enough to write <em>isolated</em> pieces of code in this paradigm."
+tags: pure-modules, functional-programming, es6
 ---
 
 With the introduction of [arrow functions](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Arrow_functions) I came to realize that vanilla JS is much closer to the ideal of containing the necessary toolset to write what I call *pure modules*.
 Let me first precisely define what I imagine a pure module is, and describe why they are a useful concept. Then I'll show why I think vanilla JS is ready for pure modules.
 
 # Pure ES6 modules
-By a pure ES6 module I mean a vanilla [ES6 module](https://exploringjs.com/es6/ch_modules.html) such that 
+By a pure ES6 module I mean a vanilla [ES6 module](https://exploringjs.com/es6/ch_modules.html) such that
 
 1) it calls only *pure* functions,
 2) it defines only *constants* and *functions*,
@@ -35,10 +36,10 @@ const f = x0 => x1 => ... => xn => y
 Pure modules are useful precisely for the reasons FP is useful.
 They only force you really well to write consistent and reliable FP code in JS.
 In other words, with pure modules FP becomes a matter of style which can mostly be *linted* (although there might be some problems with Condition 2 in this area).
-Most importantly, marking a module as pure can give its user much advantage by providing certain assumptions. 
+Most importantly, marking a module as pure can give its user much advantage by providing certain assumptions.
 
-When a module is pure, anybody who uses it knows for a 
-fact that it can easily be parallelized, unit tested and that it causes no side effects, hence it is very likely reliable. 
+When a module is pure, anybody who uses it knows for a
+fact that it can easily be parallelized, unit tested and that it causes no side effects, hence it is very likely reliable.
 Code free of side effects isolated in pure modules can also lead to much better debugging tools.
 Leaving out the unnecessary `;` should be safe, using a transpiler or not.
 
@@ -60,7 +61,7 @@ const f = x0 => (x1 => (... => (xn => y)))
 ```
 
 Therefore currying comes natural with arrow functions without any helper functions.
-Partial application works as a charm, in 
+Partial application works as a charm, in
 
 ```javascript
 const modCounter = modulo => x => x % modulo
@@ -91,21 +92,21 @@ This is a feature that would be really handy in JS, as it is common practice to 
 Consider the following example
 
 ```javascript
-const curryHelper = (...args) => 
-  f => f(...args) 
+const curryHelper = (...args) =>
+  f => f(...args)
      ? f(...args)
      : a => curryHelper(...args, a)(f)
 const currify = curryHelper()
 ```
 
-This `currify` works on any function with a fixed number of parameters. 
-`currify` for polyvariadic functions can be done only using an ending mark because it cannot know in advance if it receives another argument. 
+This `currify` works on any function with a fixed number of parameters.
+`currify` for polyvariadic functions can be done only using an ending mark because it cannot know in advance if it receives another argument.
 
 An `uncurrify` function works similarly and can be defined as follows
 
 ```javascript
-const uncurrify = f => 
-  (...args) => args.reduce( 
+const uncurrify = f =>
+  (...args) => args.reduce(
     (g, x) => g(x), f
   )
 ```
@@ -118,18 +119,18 @@ For pure modules to be usable, we need a way how to save interim results within 
 This is obviously important not only for saving ourselves the trouble to copy and paste the same subexpressions over and over again.
 We have to take into account that the compiler has no way of knowing that it can *cache* the results.
 
-In Haskell, one uses `let ... in ...` expressions or `where` control blocks to achieve this.  
+In Haskell, one uses `let ... in ...` expressions or `where` control blocks to achieve this.
 We're again lucky in this arena.
-Although arguably not as convenient to use, Immediately Invoked Function Expressions (IIFE) are able to emulate `let`s in the pure modules world as long as we do not need anything else that we could expect of `let`s. 
+Although arguably not as convenient to use, Immediately Invoked Function Expressions (IIFE) are able to emulate `let`s in the pure modules world as long as we do not need anything else that we could expect of `let`s.
 
-A quick detour just to demonstrate this fact (you can skip safely skip this). 
+A quick detour just to demonstrate this fact (you can skip safely skip this).
 In Haskell, `let` ... `in` ... are expressions and not control structures such as `where` because they can be used exactly as any other expressions.
-Therefore, if we have an expression of the form 
-```javascript 
+Therefore, if we have an expression of the form
+```javascript
 5 + (let x = f(5) in 2 * x * x)
 ```
 it translates to nothing other than `5 + 2 * f(5) * f(5)`.
-Notice also that the same result would be obtained moving `let x = f(5) in` higher in the expression, hence here it would not matter if we used `where` instead. 
+Notice also that the same result would be obtained moving `let x = f(5) in` higher in the expression, hence here it would not matter if we used `where` instead.
 The strength of `let ... in ...` is also evident. Unlike `where`, it can depend on *other* interim results made somewhere higher in the expression (`where` can only depend on the function input).
 
 Back to JavaScript. When you think about it, IIFE do the same exact thing. In the following example
@@ -147,12 +148,12 @@ The syntax can easily be changed with a transpiler.
 As you have surely heard, function composition/chaining is very important in the FP world.
 Unfortunately, there is no native operator in JS that would realize this, and we would like to avoid expressions like `f(g(h(i(j(k(l(x))))))` in pure modules.
 
-Again either we can use a pre-existing solution or come up with our own operator `o` which would emulate function composition. 
+Again either we can use a pre-existing solution or come up with our own operator `o` which would emulate function composition.
 In Haskell, for example, one can chain several functions together by using several compositions `.`.
 To avoid redundant brackets resulting from JS syntax, we should make an exception and make `o` uncurried and *polyvariadic* (even though it doesn't have to be).
 
 ```javascript
-const o = (...fs) => b => 
+const o = (...fs) => b =>
   fs.reduceRight(
     (x, f) => f(x), b
   )
@@ -173,10 +174,10 @@ It is true that JS was simply not *meant* to be explicitly typed.
 There have been several attempts to improve the situation with extensions like [TypeScript](https://www.typescriptlang.org/), but again I'm reviewing vanilla JS.
 
 ### Value constructors
-The first idea comes again from an inspiration in Haskell. 
+The first idea comes again from an inspiration in Haskell.
 We can construct values using functions called *value constructors*.
-Again to our luck, constructors already exist in JS and are set and called by the `new` operator. 
-We can nicely force JS this way to remember the used value constructor 
+Again to our luck, constructors already exist in JS and are set and called by the `new` operator.
+We can nicely force JS this way to remember the used value constructor
 
 ```javascript
 function Integer(x) {
@@ -189,7 +190,7 @@ const Ex = new Integer(x)
 Here `Integer` is called a value constructor for the type `Num`. Values of type `Num` could be constructed using other value constructors if they were defined, such as `Natural`, `Float`, etc.
 Both value constructors and type names have to be capitalized so that they are distinguishable from regular functions.
 
-Why not pack the value and its type just in some plain object? 
+Why not pack the value and its type just in some plain object?
 Because this way the value constructor name is *reserved*.
 You cannot define a different value constructor with the same name.
 
@@ -223,25 +224,25 @@ It takes a pattern matching function over the type of `v` and returns a function
 You can try it out on the following example.
 
 ```javascript
-const decrement = caseOf(({Num: x}) => 
-  ({ 
-    Integer: x - 1, 
+const decrement = caseOf(({Num: x}) =>
+  ({
+    Integer: x - 1,
     Natural: x > 0 ? x - 1 : 0
-  }) 
+  })
 )
 ```
 
-Trying a different type like `decrement("x")` fails, exactly as trying a non-matching value constructor such as `decrement(new Float(2.5))`. 
+Trying a different type like `decrement("x")` fails, exactly as trying a non-matching value constructor such as `decrement(new Float(2.5))`.
 
-This is only a proof of concept. 
+This is only a proof of concept.
 For a more usable pattern matching such as matching over more than one parameter, new JS syntax would probably need to be implemented.
 
 It would be a much needed addition to the language, after which better support for pure modules could come closer to reality.
 
 # Conclusion
 
-I've defined what I imagine behind a pure modules and argued for their introduction to existing codebases. 
-The idea is to introduce a practice of creating isolated JS places containing strictly guidelined FP code. 
+I've defined what I imagine behind a pure modules and argued for their introduction to existing codebases.
+The idea is to introduce a practice of creating isolated JS places containing strictly guidelined FP code.
 Most importantly, the idea is also to label these places as pure modules visibly so that developers can make assumpions about the functions they export.
 
 Then I've hopefully showed some hints that vanilla JS should be ready for complex pure modules to a certain extent.

@@ -182,7 +182,7 @@ main {
   min-height: 66%;
 }
 
-article .meta {
+article .meta, article .tags {
   font-size: 1.4rem;
   font-style: italic;
   color: #919191;
@@ -206,6 +206,22 @@ figure {
 
 figure img {
   max-width: 100%;
+}
+
+.tagCloud {
+  font-size: 4em;
+  text-align: center;
+}
+
+.tagCloud a {
+  padding: 10px;
+}
+
+.line {
+  display: block;
+  width: 30%;
+  border-top: solid 1px #919191;
+  margin: 40px 0;
 }
 
 /* Desktop layout */

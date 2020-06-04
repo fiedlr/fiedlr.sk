@@ -2,13 +2,14 @@
 title: Pure ES6 Modules in Action
 author: Adam Fiedler
 teaser: "In an <a href='/blog/2019-08-15-pure-modules'>earlier post</a> I wrote
-about what I imagine under pure ES6 modules and listed reasons why one should write 
-as much JS code as possible in this paradigm. 
-Then I described some techniques how to get around potential pitfalls. 
-One thing is theory, another is practice. 
-Let's look at one particular example of using pure modules to demonstrate their 
+about what I imagine under pure ES6 modules and listed reasons why one should write
+as much JS code as possible in this paradigm.
+Then I described some techniques how to get around potential pitfalls.
+One thing is theory, another is practice.
+Let's look at one particular example of using pure modules to demonstrate their
 feasibility and advantages."
 modified: true
+tags: pure-modules, functional-programming, es6
 ---
 
 TicTacToe has been a famous game known for centuries and incindentally, also used in the official [React tutorial](https://reactjs.org/tutorial/tutorial.html).
@@ -30,8 +31,8 @@ Our state will not be so different from the one in the React tutorial, besides f
 {
   // 0 stands for not played yet, 1 for player X, 2 for player O
   board: [
-    0, 0, 0, 
-    0, 0, 0, 
+    0, 0, 0,
+    0, 0, 0,
     0, 0, 0
   ],
   // number of won games by each player
@@ -60,14 +61,14 @@ import { nextStep, renderGame } from './game.pure'
 export default function TicTacToe(props) {
   const [state, updateState] = useState({
     board: [
-      0, 0, 0, 
-      0, 0, 0, 
+      0, 0, 0,
+      0, 0, 0,
       0, 0, 0
     ],
     scoreOfPlayer1: 0,
     scoreOfPlayer2: 0
   });
-  
+
   const onClick = tileId => updateState(nextStep(tileId));
 
   return <div className="TicTacToe">
@@ -86,9 +87,9 @@ The functions `nextStep` and `renderGame` will be implemented in our pure module
 import React from 'react'
 import Tile from './Tile'
 
-const renderGame = board => handleClick => 
+const renderGame = board => handleClick =>
   <div className="game"></div>
- 
+
 const nextStep = tileId => (state, _) => state
 
 export { renderGame, nextStep }
@@ -99,16 +100,16 @@ In comparison, `nextStep` takes the id of the clicked tile (which we will need t
 We cannot change the model attributes *in any way*, they should be taken as constants -- we can only decide what we *return* in the functions.
 We want to use *arrow expressions only* to implement these functions.
 As will be soon evident, this is possible without any nasty hacking or tricks.
- 
+
 We first need a small functional component which will be used for Tile rendering. Let's call it just `Tile` and implement it as follows.
 
 ```javascript
 import React from 'react';
 
 export default function Tile(props) {
-  return <button 
-          className={"Tile" + props.playerId} 
-          onClick={props.onClick} 
+  return <button
+          className={"Tile" + props.playerId}
+          onClick={props.onClick}
         />;
 }
 ```
@@ -121,25 +122,25 @@ From the model we know that the prop `playerId` can take three values:
 
 The `onClick` prop takes the handler for clicking the tile. Voila, in `renderGame` we are provided
 with such a handler already in one of our arguments, namely `handleClick`.
-If we look at its definition, it takes `tileId` to know what changes to do in the model, which we *here* in `renderGame` decide how to generate. 
+If we look at its definition, it takes `tileId` to know what changes to do in the model, which we *here* in `renderGame` decide how to generate.
 And since the game CSS handles for us that only 3 tiles fit in a row, we only need to render 9 tiles with 9 unique IDs and set according to who played them (no one, player X or O).
 
 How to create several tiles when we cannot use any loops and don't want to copy-paste?
-This is no problem at all because we have all the available tiles in the `board` array. 
+This is no problem at all because we have all the available tiles in the `board` array.
 We can *map* each abstract tile onto its corresponding DOM tile.
 The `map` function also provides the index of the tile in the array, which will serve ok as an ID for our purposes.
 We will pass the index into the `handleClick` function.
 
 ```javascript
-const renderGame = board => handleClick => 
+const renderGame = board => handleClick =>
   <div className="TicTacToe">{
-    board.map((tilePlayedBy, tileIndex) => 
-      <Tile 
-        playerId={tilePlayedBy} 
-        onClick={() => handleClick(tileIndex)} 
+    board.map((tilePlayedBy, tileIndex) =>
+      <Tile
+        playerId={tilePlayedBy}
+        onClick={() => handleClick(tileIndex)}
         key={tileIndex} // for React purposes
       />)
-  }</div> 
+  }</div>
 ```
 
 The `Tile` component handles the styles for us, which makes the `renderGame` function finished.
@@ -147,7 +148,7 @@ The `Tile` component handles the styles for us, which makes the `renderGame` fun
 ## Managing state
 
 Although the `renderGame` function seemed easy to do, `nextStep` will be trickier.
-We can *decompose* the game into three main steps that are made in any particular moment. 
+We can *decompose* the game into three main steps that are made in any particular moment.
 This is perfect for using function decomposition not to get lost in the process.
 
 1. Determining whose turn it is ~> `getIdOfPlayerOnTurn`.
@@ -158,8 +159,8 @@ This is perfect for using function decomposition not to get lost in the process.
 ### `getIdOfPlayerOnTurn`
 This one is probably the least plain to see.
 Since we cannot pass any helper variable to tell us whose turn it is, we must only blindly believe in the insight of the blueprint's creator (me :-D) and assume that the data we have in hand tell us already.
-This is indeed true: the board reveals how many turns we have so far played in the number of non-zero tiles. 
-And since there are two players, player X will play each *even* turn and player O each *odd* turn. 
+This is indeed true: the board reveals how many turns we have so far played in the number of non-zero tiles.
+And since there are two players, player X will play each *even* turn and player O each *odd* turn.
 
 ```javascript
 const getNumberOfTurns = board => board.reduce(
@@ -179,7 +180,7 @@ The rest of the state remains unchanged.
 ```javascript
 const newState = state => clickedTileId => playerOnTurn => ({
   ...state,
-  board: state.board.map((_, tileIndex) => 
+  board: state.board.map((_, tileIndex) =>
     tileIndex === clickedTileId && !state.board[tileIndex]
     ? playerOnTurn
     : state.board[tileIndex])
@@ -197,7 +198,7 @@ Here the magic of curried functions will be made evident: using our IIFE trick, 
 `isWinning` is nothing but a partially applied `containsOnlyVal`!
 
 ```javascript
-const getWinnerId = board => playerOnTurn => (isWinning => 
+const getWinnerId = board => playerOnTurn => (isWinning =>
   winnerRowOrColExists(board)(isWinning) ||
   winnerDiagonalExists(board)(isWinning)  ? playerOnTurn : 0
 )(containsOnlyVal(playerOnTurn))
@@ -205,8 +206,8 @@ const getWinnerId = board => playerOnTurn => (isWinning =>
 const containsOnlyVal = val => arr => arr.every(elem => elem === val)
 ```
 
-For rows and columns, we'll go through each tile and check its corresponding row and column, if it satisfies `isWinning`. 
-I'm not really sure here if JS behaves lazily in the following uses of `reduce`. 
+For rows and columns, we'll go through each tile and check its corresponding row and column, if it satisfies `isWinning`.
+I'm not really sure here if JS behaves lazily in the following uses of `reduce`.
 Even if we were doing everything everything thrice, it doesn't matter in a 3x3 grid.
 
 ```javascript
@@ -235,7 +236,7 @@ const getDiag1 = board => [board[0], board[4], board[8]]
 
 const getDiag2 = board => [board[2], board[4], board[6]]
 
-const winnerDiagonalExists = board => isWinning => 
+const winnerDiagonalExists = board => isWinning =>
   isWinning(getDiag1(board)) || isWinning(getDiag2(board))
 ```
 
@@ -264,7 +265,7 @@ Each turn will look as follows.
 2. Otherwise start a new game.
 
 By now it should be obvious that in order to achieve this, we need functions `newState`, `newGame` we've just implemented and pass them the arguments that they take.
-It should also be obvious now why they take some arguments, which they would not really need (such as `playerOnTurn`): among others, to prevent recounting and simplify unit testing. 
+It should also be obvious now why they take some arguments, which they would not really need (such as `playerOnTurn`): among others, to prevent recounting and simplify unit testing.
 
 ```javascript
 const nextStep = tileId => (state, _) => (

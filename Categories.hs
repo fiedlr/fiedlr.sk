@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings          #-}
 module Categories (
   categoriesField,
-  categoryField'
+  categoryField
 ) where
 
 import Hakyll (Tags (..), Context (..), toFilePath, tagsFieldWith, renderTags, field)
@@ -27,10 +27,10 @@ categoriesField k tags = field k $ \_ -> renderTags makeLink (intercalate " ") t
 
 -- Inspired by categoryField
 -- (https://jaspervdj.be/hakyll/reference/src/Hakyll.Web.Tags.html#categoryField)
-categoryField' :: String     -- ^ Destination key
+categoryField :: String     -- ^ Destination key
                -> Tags       -- ^ Tags
                -> Context a  -- ^ Context
-categoryField' = tagsFieldWith getCategory simpleRenderCatLink (mconcat . intersperse ", ")
+categoryField = tagsFieldWith getCategory simpleRenderCatLink (mconcat . intersperse ", ")
     where getCategory = return . return . takeBaseName . takeDirectory . toFilePath
 
 -- Inspired by simpleRenderLink

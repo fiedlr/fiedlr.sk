@@ -5,8 +5,8 @@ import           System.FilePath
 import           Data.Maybe (fromJust, isJust)
 
 import Helpers (removeHTMLExtensions, capitalizeFirst, loadMaybe)
-import Categories
 import PdfCompiler
+import qualified Categories as Categories
 import qualified BiblioCompiler as Biblio
 
 defaultTeaser :: String
@@ -20,7 +20,12 @@ main = do
     temp <- readFile $ texTemplate <.> "tex"
     hakyll $ do
         match (
-            "images/*" .||. fromList [".htaccess", "browserconfig.xml", "robots.txt", "favicon.ico"]
+            "images/*" .||. fromList [
+                ".htaccess",
+                "browserconfig.xml",
+                "robots.txt",
+                "favicon.ico"
+            ]
             ) $ do
                 route   idRoute
                 compile copyFileCompiler
@@ -32,14 +37,43 @@ main = do
         match "templates/*" $ compile templateBodyCompiler
 
         cats <- buildCategories "posts/**" (fromCapture "*/index.html")
-        tags <- buildTags "posts/**" (fromCapture "tags/*.html")
-        let pageCtx = categoriesField "cats" cats
-                    <> tagsField "tags" tags
+        tags <- buildTags "posts/**" (fromCapture "topics/*.html")
+        let pageCtx =  Categories.categoriesField "cats" cats
                     <> defaultContext
-            postCtx =  categoryField' "category" cats
+            postCtx =  Categories.categoryField "category" cats
                     <> dateField "date" "%B %e, %Y"
                     <> modificationTimeField "modificationDate" "%B %e, %Y"
                     <> defaultContext
+
+        -- Category indices compilation
+        tagsRules cats $ \cat pattern -> do
+            route idRoute
+            compile $ do
+                posts <- recentFirst =<< loadAll (pattern .&&. hasNoVersion)
+                let archiveCtx   = listField "posts" postCtx (return posts)
+                                <> constField "title" (capitalizeFirst cat)
+                                <> constField "teaser" defaultTeaser
+                                <> pageCtx
+
+                makeItem ""
+                    >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
+                    >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+                    >>= relativizeUrls >>= removeHTMLExtensions
+
+        -- Tag indices compilation
+        tagsRules tags $ \tag pattern -> do
+            route idRoute
+            compile $ do
+                posts <- recentFirst =<< loadAll (pattern .&&. hasNoVersion)
+                let archiveCtx   = listField "posts" postCtx (return posts)
+                                <> constField "title" ('#' : tag)
+                                <> constField "teaser" defaultTeaser
+                                <> pageCtx
+
+                makeItem ""
+                    >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
+                    >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+                    >>= relativizeUrls >>= removeHTMLExtensions
 
         -- Post compilation
         match "posts/**" $ do
@@ -48,11 +82,13 @@ main = do
                 matchId    <- getUnderlying
                 matchExt   <- getUnderlyingExtension
                 matchUrl   <- getRoute matchId
+
                 mathJax    <- getMetadataField matchId "mathjax"
                 biblioFile <- getMetadataField matchId "bibliography"
                 nsecs      <- getMetadataField matchId "numbersections"
                 teaser     <- getMetadataField matchId "teaser"
 
+                let postCtx' = tagsField "tags" tags <> postCtx
                 let pageCtx' = if matchExt == ".tex" && isJust matchUrl
                                then constField "pdf" (
                                    dropExtension (fromJust matchUrl) ++ ".pdf"
@@ -61,7 +97,7 @@ main = do
                     descField = constField "teaser" $ maybe defaultTeaser id teaser
                             in
                     (Biblio.pandocCompile mathJax biblioFile nsecs
-                    >>= loadAndApplyTemplate "templates/post.html"    postCtx
+                    >>= loadAndApplyTemplate "templates/post.html"    postCtx'
                     >>= loadAndApplyTemplate "templates/default.html" (descField <> pageCtx')
                     >>= relativizeUrls >>= removeHTMLExtensions)
 
@@ -80,31 +116,17 @@ main = do
 
                 withItemBody (pdfCompile temp nsecs) pan
 
-        -- Category indices compilation
-        tagsRules cats $ \tag pattern -> do
-            route idRoute
-            compile $ do
-                posts <- recentFirst =<< loadAll (pattern .&&. hasNoVersion)
-                let categoryName = capitalizeFirst tag
-                    archiveCtx   = listField "posts" postCtx (return posts)
-                                <> constField "title" categoryName
-                                <> constField "teaser" defaultTeaser
-                                <> pageCtx
-
-                makeItem ""
-                    >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
-                    >>= loadAndApplyTemplate "templates/default.html" archiveCtx
-                    >>= relativizeUrls >>= removeHTMLExtensions
-
         -- Generate static pages
         match "pages/**" $ do
             route $ gsubRoute "pages/" (const "") `composeRoutes` setExtension ".html"
             compile $ do
-                let descField = constField "teaser" defaultTeaser
+                let pageCtx' = constField "teaser" defaultTeaser
+                            <> tagCloudField "tagCloud" 20 80 tags
+                            <> pageCtx
 
                 getResourceBody
-                    >>= applyAsTemplate pageCtx
-                    >>= loadAndApplyTemplate "templates/default.html" (descField <> pageCtx)
+                    >>= applyAsTemplate pageCtx'
+                    >>= loadAndApplyTemplate "templates/default.html" pageCtx'
                     >>= relativizeUrls >>= removeHTMLExtensions
 
         -- Generate homepage
