@@ -101,7 +101,7 @@ Long story short, I had to [code this](https://github.com/fiedlr/fiedlr/blob/mas
 Hopefully I'll find time to post a pull request soon so that nobody has to deal with this again.
 
 And oh, remember that Hakyll is a wrapper for a Pandoc *fragment*?
-It exports to HTML, that's it.
+It exports to HTML, maybe some RSS and Atom when you configure it, that's it.
 You have to struggle with writing custom compilers pretty much for anything else, that includes *PDF*, of course.
 Maybe a repo with common case compilers would be nice, when they're for some reason not included in the basic codebase.
 PDF is not really that superadvanced (come on, we're talking Pandoc here).
