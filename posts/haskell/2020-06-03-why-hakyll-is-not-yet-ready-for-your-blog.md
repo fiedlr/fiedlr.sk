@@ -29,8 +29,9 @@ After all, it's a generator and not a standalone CMS.
 I thought the [tutorials](https://jaspervdj.be/hakyll/tutorials.html) would answer most of my needs.
 But the truth is worse, let's face it.
 
-It turns out Hakyll is still just a fancy *wrapper* for a Pandoc fragment (converting to HTML).
-It's not even a [Gentoo](https://www.gentoo.org) in the static generator world, it is rather an [LFS](http://www.linuxfromscratch.org).
+Hakyll is still a very fancy *wrapper* for a Pandoc fragment (converting to HTML).
+It features a neat and helpful set of functions, but it is not even a [Gentoo](https://www.gentoo.org) in the static generator world.
+It is rather an [LFS](http://www.linuxfromscratch.org).
 Almost nothing basic works out of the box: there's no pagination, no tags, no categories, no feeds, no sitemaps, no proper *excerpt support* for free (I gave up and just use a basic YAML tag for them, even though you can have fun [here](https://jaspervdj.be/hakyll/tutorials/using-teasers-in-hakyll.html)).
 You start with an index of 5 newest posts, you can post to the `posts` folder and that's it.
 And yes, this dumb prefix `posts/` is in the link to any post (that is actually the first thing I was solving).
