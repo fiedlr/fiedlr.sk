@@ -1,24 +1,32 @@
 <article>
     <section class="meta">
         Posted on $date$ in $category$
+        $if(pdf)$
+        <a href="/$pdf$" rel="print" title="Save as PDF" class="btn pdf">
+            <i class="fa fa-print"></i>PDF
+        </a>
+        $endif$
+        $if(timeToRead)$
+        &middot; <i class="fa fa-clock-o"></i> $timeToRead$ read
+        $endif$
         $if(modified)$
-        <br>
-        (Modified on <span class="modDate" title="Check GitHub for prior versions.">$modificationDate$</span>)
+        <br><em>Modified on <span class="modDate" title="Check GitHub for prior versions.">$modificationDate$</span></em>
         $endif$
     </section>
     <section class="body">
         $if(teaser)$
             $if(excludeteaser)$
             $else$
-                <p>$teaser$</p>
+            <p>$teaser$</p>
             $endif$
         $endif$
         $body$
     </section>
-    $if(tags)$
-    <section class="tags">
+    <section class="footer">
         <div class="line"></div>
-        Read more articles on: $tags$.
+        <a href="#" class="btn up"><i class="fa fa-arrow-up"></i>Go up</a>
+        $if(tags)$
+        <p>Read more articles on: $tags$.</p>
+        $endif$
     </section>
-    $endif$
 </article>

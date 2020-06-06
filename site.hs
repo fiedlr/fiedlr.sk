@@ -89,12 +89,13 @@ main = do
                 teaser     <- getMetadataField matchId "teaser"
 
                 let excerpt  = maybe defaultTeaser id teaser
-                    postCtx' = tagsField "tags" tags <> postCtx
-                    pageCtx' = (if matchExt == ".tex" && isJust matchUrl
+                    pdf      = if matchExt == ".tex" && isJust matchUrl
                                then constField "pdf" (
                                    dropExtension (fromJust matchUrl) <.> "pdf"
-                               ) <> pageCtx
-                               else pageCtx)
+                               ) <> defaultContext
+                               else defaultContext
+                    postCtx' = tagsField "tags" tags <> pdf <> postCtx
+                    pageCtx' = pdf <> pageCtx
                             <> constField "teaser" excerpt
                             <> constField "desc"   (stripTags excerpt)
 
