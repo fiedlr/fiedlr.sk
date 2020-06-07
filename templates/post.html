@@ -22,11 +22,10 @@
         $endif$
         $body$
     </section>
+    $if(tags)$
     <section class="footer">
         <div class="line"></div>
-        <a href="#" class="btn up"><i class="fa fa-arrow-up"></i>Go up</a>
-        $if(tags)$
-        <p>Read more articles on: $tags$.</p>
-        $endif$
+        Read more articles on: $tags$.
     </section>
+    $endif$
 </article>

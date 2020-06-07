@@ -76,6 +76,7 @@ header {
   font-weight: 400;
   vertical-align: top;
   font-style: normal;
+  border: 0;
 }
 
 .btn:hover {
@@ -83,6 +84,7 @@ header {
   color: #232323;
   -webkit-transition: background-color 300ms;
   transition: background-color 300ms;
+  border: 0;
 }
 
 .btn i {
@@ -99,10 +101,9 @@ header {
 }
 
 .social {
-  position: static;
-  height: 30px;
   text-align: center;
-  margin-bottom: 1em;
+  font-size: 1.3rem;
+  margin: 1rem 0;
 }
 
 .social a { display: inline-block; width: 1.7em; height: 1.7em; padding: 0.2em; overflow: hidden; margin: 0 0.8%; }
@@ -135,7 +136,7 @@ nav a {
 
 footer {
   width: 100%;
-  height: 4rem;
+  padding: 1rem;
   color: #919191;
   text-align: center;
   font-size: 1.1rem;
@@ -201,7 +202,7 @@ main {
   min-height: 66%;
 }
 
-article .meta, article .footer p {
+article .meta, article .footer {
   font-size: 1.3rem;
   color: #919191;
 }
@@ -283,12 +284,11 @@ figure img {
   }
 
   .social {
-    display: block;
     position: fixed;
     width: 25%;
     height: 30px;
     right: 0;
-    bottom: 0;
+    bottom: 5px;
   }
 
   main {
@@ -308,7 +308,7 @@ figure img {
   }
 
   footer {
-    padding: 0 10%;
+    padding: 2rem 10%;
     width: 75%;
   }
 
