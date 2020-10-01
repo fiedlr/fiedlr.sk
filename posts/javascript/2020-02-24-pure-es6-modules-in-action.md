@@ -1,7 +1,7 @@
 ---
 title: Pure ES6 Modules in Action
 author: Adam Fiedler
-teaser: "In an <a href='/blog/2019-08-15-pure-modules'>earlier post</a> I wrote
+teaser: "In an <a href='/javascript/2019-08-15-pure-modules'>earlier post</a> I wrote
 about what I imagine under pure ES6 modules and listed reasons why one should write
 as much JS code as possible in this paradigm.
 Then I described some techniques how to get around potential pitfalls.

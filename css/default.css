@@ -31,6 +31,11 @@ header {
   text-align: center;
 }
 
+.app {
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
 .logo {
   font-size: 1.8rem;
   text-align: center;
@@ -218,7 +223,7 @@ p, li {
 }
 
 .portrait {
-  width: 400px;
+  width: 500px;
   height: auto;
 }
 
@@ -256,6 +261,12 @@ figure img {
   overflow: hidden;
   clip: rect(0,0,0,0);
   border: 0;
+}
+
+.up {
+  position: fixed;
+  right: 4em;
+  bottom: 40px;
 }
 
 /* Desktop layout */
@@ -325,10 +336,6 @@ figure img {
 
 /* Portrait and footer collapse fix */
 @media (min-width: 1200px) and (min-height: 426px) {
-  figure {
-    float: right;
-  }
-
   footer {
     text-align: left;
   }
