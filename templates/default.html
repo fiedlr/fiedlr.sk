@@ -5,7 +5,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Adam Fiedler">
-    <title>$title$ | Adam Fiedler</title>
+    <title>$if(title)$$title$ | $endif$Adam Fiedler</title>
     <meta name="description" content="$desc$">
     <meta property="og:title" content="$title$ | Adam Fiedler">
     <meta property="og:description" content="$desc$">
@@ -38,9 +38,9 @@
         </nav>
     </header>
     <main role="main">
-        <div class="app">
+        <div class="body">
             <div class="title">
-                <h1>$title$</h1>
+                <h1>$if(title)$$title$$endif$</h1>
             </div>
             $body$
             <p>
@@ -50,10 +50,12 @@
         </div>
     </main>
     <footer>
-        &copy; Adam Fiedler 2020
-        <div class="heart">
-            Running with &hearts; on
-            <a href="https://jaspervdj.be/hakyll">Hakyll</a>. Here's the <a href="https://github.com/fiedlr/fiedlr">source</a>.
+        <div class="body">
+            &copy; Adam Fiedler 2020
+            <div class="heart">
+                Running with &hearts; on
+                <a href="https://jaspervdj.be/hakyll">Hakyll</a>. Here's the <a href="https://github.com/fiedlr/fiedlr">source</a>.
+            </div>
         </div>
         <div class="social">
             <a class="em" href="mailto:info@fiedlr.sk">
