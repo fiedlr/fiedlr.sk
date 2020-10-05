@@ -27,7 +27,8 @@ main = do
                 ".htaccess",
                 "browserconfig.xml",
                 "robots.txt",
-                "favicon.ico"
+                "favicon.ico",
+                "CNAME"
             ]
             ) $ do
                 route   idRoute
