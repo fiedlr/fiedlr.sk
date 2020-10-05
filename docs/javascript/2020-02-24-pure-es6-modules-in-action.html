@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Adam Fiedler">
+    <title>Pure ES6 Modules in Action | Adam Fiedler</title>
+    <meta name="description" content="In an earlier post I wrote about what I imagine under pure ES6 modules and listed reasons why one should write as much JS code as possible in this paradigm. Then I described some techniques how to get around potential pitfalls. One thing is theory, another is practice. Let's look at one particular example of using pure modules to demonstrate their feasibility and advantages.">
+    <meta property="og:title" content="Pure ES6 Modules in Action | Adam Fiedler">
+    <meta property="og:description" content="In an earlier post I wrote about what I imagine under pure ES6 modules and listed reasons why one should write as much JS code as possible in this paradigm. Then I described some techniques how to get around potential pitfalls. One thing is theory, another is practice. Let's look at one particular example of using pure modules to demonstrate their feasibility and advantages.">
+    <meta property="og:type" content="article">
+    <meta property="og:article:author" content="Adam Fiedler">
+    <meta property="og:url" content="https://fiedler.sk/javascript/2020-02-24-pure-es6-modules-in-action.html">
+    <meta property="og:image" content="https://fiedler.sk/images/tile.png">
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&family=Source+Sans+Pro:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/default.css">
+    <link rel="stylesheet" type="text/css" href="../css/syntax.css">
+    
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="../images/tile.png" alt="Adam Fiedler - Silhouette" class="round">
+            <div class="caption">Adam Fiedler</div>
+        </div>
+        <nav>
+            <a href="../">Recent</a>
+            <a href="../blog">Blog</a> <a href="../essays">Essays</a> <a href="../haskell">Haskell</a> <a href="../javascript">Javascript</a>
+            <a href="../about">About</a>
+        </nav>
+    </header>
+    <main role="main">
+        <div class="body">
+            <div class="title">
+                <h1>Pure ES6 Modules in Action</h1>
+            </div>
+            <article>
+    <section class="meta">
+        Posted on February 24, 2020 in <a href="../javascript">Javascript</a>
+        
+        
+        
+        <br><em>Modified on <span class="modDate" title="Check GitHub for prior versions.">October  5, 2020</span></em>
+        
+    </section>
+    <section class="body">
+        
+            
+            <p>In an <a href="../javascript/2019-08-15-pure-modules">earlier post</a> I wrote about what I imagine under pure ES6 modules and listed reasons why one should write as much JS code as possible in this paradigm. Then I described some techniques how to get around potential pitfalls. One thing is theory, another is practice. Let's look at one particular example of using pure modules to demonstrate their feasibility and advantages.</p>
+            
+        
+        <p>TicTacToe has been a famous game known for centuries and incindentally, also used in the official <a href="https://reactjs.org/tutorial/tutorial.html">React tutorial</a>. We can surely revisit the tutorial and rethink it to show how separate game logic into a pure module and away from any event handling/rendering. Once there, we will have all of the advantages mentioned in the article on pure modules. And that not only through separation of concerns: the pureness of the module will allow us to easily reason about the module, type, unit test and parallelize it (as will hopefully be shown in a follow-up article).</p>
+<h1 id="implementation">Implementation</h1>
+<p>How exactly can we implement the logic of TicTacToe in a pure module? We should first start thinking about the <em>model</em>, or more explicitly, the state of the game. It does not have much to do with pure modules per se, but it will greatly influence how our resulting code will look. This state will be maintained by a React component (why not). For our simple purposes, the React component will handle the state directly. That does not mean it couldn’t be extracted to a Redux container or something similar. Our state will not be so different from the one in the React tutorial, besides for my personal preference of saving the played tiles with numbers:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb1-1" title="1"><span class="op">{</span></a>
+<a class="sourceLine" id="cb1-2" title="2">  <span class="co">// 0 stands for not played yet, 1 for player X, 2 for player O</span></a>
+<a class="sourceLine" id="cb1-3" title="3">  <span class="dt">board</span><span class="op">:</span> [</a>
+<a class="sourceLine" id="cb1-4" title="4">    <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb1-5" title="5">    <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb1-6" title="6">    <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb1-7" title="7">  ]<span class="op">,</span></a>
+<a class="sourceLine" id="cb1-8" title="8">  <span class="co">// number of won games by each player</span></a>
+<a class="sourceLine" id="cb1-9" title="9">  <span class="dt">scoreOfPlayer1</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb1-10" title="10">  <span class="dt">scoreOfPlayer2</span><span class="op">:</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb1-11" title="11"><span class="op">}</span></a></code></pre></div>
+<p>Notice that the board is simply represented as an array preserving for each tile the id of the player who played it. There is no need to differentiate between rows and columns, that can be taken care of with CSS. We will pass the model attributes from our React component to the functions that we will be implementing in our pure module intended for game logic. The idea is that our React component will <em>only</em> handle events and re-rendering. In a way, it will work similarly as an integrated Redux reducer with the mouse clicking as our action. After getting a click on a tile, it will set a new state based on the previous state. That’s it. The calculation of the new state will be treated in our pure module.</p>
+<h2 id="rendering">Rendering</h2>
+<p>First let us briefly overview the implementation of our main React component.</p>
+<div class="sourceCode" id="cb2" data-startFrom="1"><pre class="sourceCode numberSource javascript numberLines line-anchors nowrap"><code class="sourceCode javascript"><a class="sourceLine" id="cb2-1" href="#cb2-1" title="1"><span class="im">import</span> React<span class="op">,</span> <span class="op">{</span> useState <span class="op">}</span> <span class="im">from</span> <span class="st">'react'</span></a>
+<a class="sourceLine" id="cb2-2" href="#cb2-2" title="2"><span class="im">import</span> <span class="op">{</span> nextStep<span class="op">,</span> renderGame <span class="op">}</span> <span class="im">from</span> <span class="st">'./game.pure'</span></a>
+<a class="sourceLine" id="cb2-3" href="#cb2-3" title="3"></a>
+<a class="sourceLine" id="cb2-4" href="#cb2-4" title="4"><span class="im">export</span> <span class="im">default</span> <span class="kw">function</span> <span class="at">TicTacToe</span>(props) <span class="op">{</span></a>
+<a class="sourceLine" id="cb2-5" href="#cb2-5" title="5">  <span class="kw">const</span> [state<span class="op">,</span> updateState] <span class="op">=</span> <span class="at">useState</span>(<span class="op">{</span></a>
+<a class="sourceLine" id="cb2-6" href="#cb2-6" title="6">    <span class="dt">board</span><span class="op">:</span> [</a>
+<a class="sourceLine" id="cb2-7" href="#cb2-7" title="7">      <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb2-8" href="#cb2-8" title="8">      <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb2-9" href="#cb2-9" title="9">      <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb2-10" href="#cb2-10" title="10">    ]<span class="op">,</span></a>
+<a class="sourceLine" id="cb2-11" href="#cb2-11" title="11">    <span class="dt">scoreOfPlayer1</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb2-12" href="#cb2-12" title="12">    <span class="dt">scoreOfPlayer2</span><span class="op">:</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb2-13" href="#cb2-13" title="13">  <span class="op">}</span>)<span class="op">;</span></a>
+<a class="sourceLine" id="cb2-14" href="#cb2-14" title="14"></a>
+<a class="sourceLine" id="cb2-15" href="#cb2-15" title="15">  <span class="kw">const</span> onClick <span class="op">=</span> tileId <span class="kw">=&gt;</span> <span class="at">updateState</span>(<span class="at">nextStep</span>(tileId))<span class="op">;</span></a>
+<a class="sourceLine" id="cb2-16" href="#cb2-16" title="16"></a>
+<a class="sourceLine" id="cb2-17" href="#cb2-17" title="17">  <span class="cf">return</span> <span class="op">&lt;</span>div className<span class="op">=</span><span class="st">&quot;TicTacToe&quot;</span><span class="op">&gt;</span></a>
+<a class="sourceLine" id="cb2-18" href="#cb2-18" title="18">    <span class="op">{</span><span class="at">renderGame</span>(<span class="va">state</span>.<span class="at">board</span>)(onClick)<span class="op">}</span></a>
+<a class="sourceLine" id="cb2-19" href="#cb2-19" title="19">    <span class="op">&lt;</span>p<span class="op">&gt;</span>Player <span class="dt">X</span><span class="op">:</span> <span class="op">{</span><span class="va">state</span>.<span class="at">scoreOfPlayer1</span><span class="op">}</span> wins&lt;/p<span class="op">&gt;</span></a>
+<a class="sourceLine" id="cb2-20" href="#cb2-20" title="20">    <span class="op">&lt;</span>p<span class="op">&gt;</span>Player <span class="dt">O</span><span class="op">:</span> <span class="op">{</span><span class="va">state</span>.<span class="at">scoreOfPlayer2</span><span class="op">}</span> wins&lt;/p<span class="op">&gt;</span></a>
+<a class="sourceLine" id="cb2-21" href="#cb2-21" title="21">  &lt;/div<span class="op">&gt;;</span></a>
+<a class="sourceLine" id="cb2-22" href="#cb2-22" title="22"><span class="op">}</span></a></code></pre></div>
+<p>Since React is not the subject of this tutorial, we’ll just leave it as it is. I think the commentary above is sufficient to understand it with little previous React experience. The functions <code>nextStep</code> and <code>renderGame</code> will be implemented in our pure module, which we can call <code>game.pure.js</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb3-1" title="1"><span class="im">import</span> React <span class="im">from</span> <span class="st">'react'</span></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="im">import</span> Tile <span class="im">from</span> <span class="st">'./Tile'</span></a>
+<a class="sourceLine" id="cb3-3" title="3"></a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="kw">const</span> renderGame <span class="op">=</span> board <span class="kw">=&gt;</span> handleClick <span class="kw">=&gt;</span></a>
+<a class="sourceLine" id="cb3-5" title="5">  <span class="op">&lt;</span>div className<span class="op">=</span><span class="st">&quot;game&quot;</span><span class="op">&gt;</span>&lt;/div<span class="op">&gt;</span></a>
+<a class="sourceLine" id="cb3-6" title="6"></a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="kw">const</span> nextStep <span class="op">=</span> tileId <span class="kw">=&gt;</span> (state<span class="op">,</span> _) <span class="kw">=&gt;</span> state</a>
+<a class="sourceLine" id="cb3-8" title="8"></a>
+<a class="sourceLine" id="cb3-9" title="9"><span class="im">export</span> <span class="op">{</span> renderGame<span class="op">,</span> nextStep <span class="op">}</span></a></code></pre></div>
+<p>The <code>renderGame</code> function takes care of rendering the board according to its state given in <code>board</code> and a <code>handleClick</code> handler, which just calls <code>nextStep</code> when a tile is clicked and saves the new state into the model. In comparison, <code>nextStep</code> takes the id of the clicked tile (which we will need to generate somehow) and the <code>state</code>, which contains the model we just went over (the <code>_</code> argument stands for the React props which are not needed here), and returns a new state with the clicked tile fixed to the player that clicked it. We cannot change the model attributes <em>in any way</em>, they should be taken as constants – we can only decide what we <em>return</em> in the functions. We want to use <em>arrow expressions only</em> to implement these functions. As will be soon evident, this is possible without any nasty hacking or tricks.</p>
+<p>We first need a small functional component which will be used for Tile rendering. Let’s call it just <code>Tile</code> and implement it as follows.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb4-1" title="1"><span class="im">import</span> React <span class="im">from</span> <span class="st">'react'</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb4-2" title="2"></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="im">export</span> <span class="im">default</span> <span class="kw">function</span> <span class="at">Tile</span>(props) <span class="op">{</span></a>
+<a class="sourceLine" id="cb4-4" title="4">  <span class="cf">return</span> <span class="op">&lt;</span>button</a>
+<a class="sourceLine" id="cb4-5" title="5">          className<span class="op">={</span><span class="st">&quot;Tile&quot;</span> <span class="op">+</span> <span class="va">props</span>.<span class="at">playerId</span><span class="op">}</span></a>
+<a class="sourceLine" id="cb4-6" title="6">          onClick<span class="op">={</span><span class="va">props</span>.<span class="at">onClick</span><span class="op">}</span></a>
+<a class="sourceLine" id="cb4-7" title="7">        /&gt;<span class="op">;</span></a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="op">}</span></a></code></pre></div>
+<p>From the model we know that the prop <code>playerId</code> can take three values:</p>
+<ul>
+<li><code>0</code> denotes the tile hasn’t been played by any player yet,</li>
+<li><code>1</code> denotes Player X,</li>
+<li><code>2</code> denotes Player O.</li>
+</ul>
+<p>The <code>onClick</code> prop takes the handler for clicking the tile. Voila, in <code>renderGame</code> we are provided with such a handler already in one of our arguments, namely <code>handleClick</code>. If we look at its definition, it takes <code>tileId</code> to know what changes to do in the model, which we <em>here</em> in <code>renderGame</code> decide how to generate. And since the game CSS handles for us that only 3 tiles fit in a row, we only need to render 9 tiles with 9 unique IDs and set according to who played them (no one, player X or O).</p>
+<p>How to create several tiles when we cannot use any loops and don’t want to copy-paste? This is no problem at all because we have all the available tiles in the <code>board</code> array. We can <em>map</em> each abstract tile onto its corresponding DOM tile. The <code>map</code> function also provides the index of the tile in the array, which will serve ok as an ID for our purposes. We will pass the index into the <code>handleClick</code> function.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">const</span> renderGame <span class="op">=</span> board <span class="kw">=&gt;</span> handleClick <span class="kw">=&gt;</span></a>
+<a class="sourceLine" id="cb5-2" title="2">  <span class="op">&lt;</span>div className<span class="op">=</span><span class="st">&quot;TicTacToe&quot;</span><span class="op">&gt;{</span></a>
+<a class="sourceLine" id="cb5-3" title="3">    <span class="va">board</span>.<span class="at">map</span>((tilePlayedBy<span class="op">,</span> tileIndex) <span class="kw">=&gt;</span></a>
+<a class="sourceLine" id="cb5-4" title="4">      <span class="op">&lt;</span>Tile</a>
+<a class="sourceLine" id="cb5-5" title="5">        playerId<span class="op">={</span>tilePlayedBy<span class="op">}</span></a>
+<a class="sourceLine" id="cb5-6" title="6">        onClick<span class="op">={</span>() <span class="kw">=&gt;</span> <span class="at">handleClick</span>(tileIndex)<span class="op">}</span></a>
+<a class="sourceLine" id="cb5-7" title="7">        key<span class="op">={</span>tileIndex<span class="op">}</span> <span class="co">// for React purposes</span></a>
+<a class="sourceLine" id="cb5-8" title="8">      /&gt;)</a>
+<a class="sourceLine" id="cb5-9" title="9">  <span class="op">}</span>&lt;/div<span class="op">&gt;</span></a></code></pre></div>
+<p>The <code>Tile</code> component handles the styles for us, which makes the <code>renderGame</code> function finished.</p>
+<h2 id="managing-state">Managing state</h2>
+<p>Although the <code>renderGame</code> function seemed easy to do, <code>nextStep</code> will be trickier. We can <em>decompose</em> the game into three main steps that are made in any particular moment. This is perfect for using function decomposition not to get lost in the process.</p>
+<ol type="1">
+<li>Determining whose turn it is ~&gt; <code>getIdOfPlayerOnTurn</code>.</li>
+<li>Determining the new state if a tile with <code>tileId</code> is clicked ~&gt; <code>newState</code>.</li>
+<li>Determining if the game is finished <em>and</em> getting the winner id ~&gt; <code>getWinnerId</code>.</li>
+<li>Resetting the game and incrementing the score of the winner ~&gt; <code>newGame</code>.</li>
+</ol>
+<h3 id="getidofplayeronturn"><code>getIdOfPlayerOnTurn</code></h3>
+<p>This one is probably the least plain to see. Since we cannot pass any helper variable to tell us whose turn it is, we must only blindly believe in the insight of the blueprint’s creator (me :-D) and assume that the data we have in hand tell us already. This is indeed true: the board reveals how many turns we have so far played in the number of non-zero tiles. And since there are two players, player X will play each <em>even</em> turn and player O each <em>odd</em> turn.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">const</span> getNumberOfTurns <span class="op">=</span> board <span class="kw">=&gt;</span> <span class="va">board</span>.<span class="at">reduce</span>(</a>
+<a class="sourceLine" id="cb6-2" title="2">  (count<span class="op">,</span> tilePlayedBy) <span class="kw">=&gt;</span> count <span class="op">+</span> <span class="va">Math</span>.<span class="at">ceil</span>(tilePlayedBy / <span class="dv">2</span>)<span class="op">,</span></a>
+<a class="sourceLine" id="cb6-3" title="3">  <span class="dv">0</span></a>
+<a class="sourceLine" id="cb6-4" title="4">)</a>
+<a class="sourceLine" id="cb6-5" title="5"></a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="kw">const</span> getIdOfPlayerOnTurn <span class="op">=</span> board <span class="kw">=&gt;</span> <span class="at">getNumberOfTurns</span>(board) <span class="op">%</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span></a></code></pre></div>
+<h3 id="newstate"><code>newState</code></h3>
+<p>This function should take the id of the clicked tile and returning a <em>new state</em> with a board, where the given tile is marked with the player whose turn it was. We <em>do not change</em> the original state in any way! Since we cannot use any loops, we’ll just map over the original board and return one where the clicked tile has the corresponding playerId if the tile hasn’t been played yet. The rest of the state remains unchanged.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">const</span> newState <span class="op">=</span> state <span class="kw">=&gt;</span> clickedTileId <span class="kw">=&gt;</span> playerOnTurn <span class="kw">=&gt;</span> (<span class="op">{</span></a>
+<a class="sourceLine" id="cb7-2" title="2">  ...<span class="at">state</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb7-3" title="3">  <span class="dt">board</span><span class="op">:</span> <span class="va">state</span>.<span class="va">board</span>.<span class="at">map</span>((_<span class="op">,</span> tileIndex) <span class="kw">=&gt;</span></a>
+<a class="sourceLine" id="cb7-4" title="4">    tileIndex <span class="op">===</span> clickedTileId <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="va">state</span>.<span class="at">board</span>[tileIndex]</a>
+<a class="sourceLine" id="cb7-5" title="5">    <span class="op">?</span> playerOnTurn</a>
+<a class="sourceLine" id="cb7-6" title="6">    : <span class="va">state</span>.<span class="at">board</span>[tileIndex])</a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="op">}</span>)</a></code></pre></div>
+<h3 id="getwinnerid"><code>getWinnerId</code></h3>
+<p>All of us have probably played 3x3 TicTacToe in some point of our lives. We need three X’s (O’s) in a row (~&gt; <code>getRow</code>), column (~&gt; <code>getCol</code>), or a diagonal (~&gt; <code>getDiag</code>). If in one of these cases there are three identical playerIds to the playerId on turn, we have a winner with this id (<code>winnerRowOrColExists</code>).</p>
+<p>We need only check if any row, column or a diagonal contains the <code>playerOnTurn</code>. Because Javascript is dumb enough not to have any built-in array comparator, we’ll create a simple checker <code>containsOnlyVal</code> to check if an array contains only a given value of a <em>trivial</em> data type. Here the magic of curried functions will be made evident: using our IIFE trick, we create a local function called <code>isWinning</code>, which checks if an array contains only <code>playerOnTurn</code> values. <code>isWinning</code> is nothing but a partially applied <code>containsOnlyVal</code>!</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">const</span> getWinnerId <span class="op">=</span> board <span class="kw">=&gt;</span> playerOnTurn <span class="kw">=&gt;</span> (isWinning <span class="kw">=&gt;</span></a>
+<a class="sourceLine" id="cb8-2" title="2">  <span class="at">winnerRowOrColExists</span>(board)(isWinning) <span class="op">||</span></a>
+<a class="sourceLine" id="cb8-3" title="3">  <span class="at">winnerDiagonalExists</span>(board)(isWinning)  <span class="op">?</span> playerOnTurn : <span class="dv">0</span></a>
+<a class="sourceLine" id="cb8-4" title="4">)(<span class="at">containsOnlyVal</span>(playerOnTurn))</a>
+<a class="sourceLine" id="cb8-5" title="5"></a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="kw">const</span> containsOnlyVal <span class="op">=</span> val <span class="kw">=&gt;</span> arr <span class="kw">=&gt;</span> <span class="va">arr</span>.<span class="at">every</span>(elem <span class="kw">=&gt;</span> elem <span class="op">===</span> val)</a></code></pre></div>
+<p>For rows and columns, we’ll go through each tile and check its corresponding row and column, if it satisfies <code>isWinning</code>. I’m not really sure here if JS behaves lazily in the following uses of <code>reduce</code>. Even if we were doing everything everything thrice, it doesn’t matter in a 3x3 grid.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">const</span> getRow <span class="op">=</span> board <span class="kw">=&gt;</span> tileIndex <span class="kw">=&gt;</span> (firstOnRow <span class="kw">=&gt;</span> [</a>
+<a class="sourceLine" id="cb9-2" title="2">  board[firstOnRow]<span class="op">,</span> board[firstOnRow <span class="op">+</span> <span class="dv">1</span>]<span class="op">,</span> board[firstOnRow <span class="op">+</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb9-3" title="3">])(<span class="dv">3</span> <span class="op">*</span> <span class="va">Math</span>.<span class="at">floor</span>(tileIndex / <span class="dv">3</span>))</a>
+<a class="sourceLine" id="cb9-4" title="4"></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="kw">const</span> getCol <span class="op">=</span> board <span class="kw">=&gt;</span> tileIndex <span class="kw">=&gt;</span> (firstOnCol <span class="kw">=&gt;</span> [</a>
+<a class="sourceLine" id="cb9-6" title="6">  board[firstOnCol]<span class="op">,</span> board[firstOnCol <span class="op">+</span> <span class="dv">3</span>]<span class="op">,</span> board[firstOnCol <span class="op">+</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">3</span>]</a>
+<a class="sourceLine" id="cb9-7" title="7">])(tileIndex <span class="op">%</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb9-8" title="8"></a>
+<a class="sourceLine" id="cb9-9" title="9"><span class="kw">const</span> winnerRowOrColExists <span class="op">=</span> board <span class="kw">=&gt;</span> isWinning <span class="kw">=&gt;</span></a>
+<a class="sourceLine" id="cb9-10" title="10">  <span class="va">board</span>.<span class="at">reduce</span>((prev<span class="op">,</span> _<span class="op">,</span> tileIndex) <span class="kw">=&gt;</span> prev</a>
+<a class="sourceLine" id="cb9-11" title="11">    <span class="op">||</span> <span class="at">isWinning</span>(<span class="at">getRow</span>(board)(tileIndex))</a>
+<a class="sourceLine" id="cb9-12" title="12">    <span class="op">||</span> <span class="at">isWinning</span>(<span class="at">getCol</span>(board)(tileIndex))<span class="op">,</span></a>
+<a class="sourceLine" id="cb9-13" title="13">    <span class="kw">false</span></a>
+<a class="sourceLine" id="cb9-14" title="14">  )</a></code></pre></div>
+<p>For diagonals, we just extract the corresponding tile values by hand. If we had bigger grids, we could abstract this in a similar way as we abstracted getting a row or a col for a particular tile. There would be some problems with boundaries though, hence the simple attitude in this case.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">const</span> getDiag1 <span class="op">=</span> board <span class="kw">=&gt;</span> [board[<span class="dv">0</span>]<span class="op">,</span> board[<span class="dv">4</span>]<span class="op">,</span> board[<span class="dv">8</span>]]</a>
+<a class="sourceLine" id="cb10-2" title="2"></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="kw">const</span> getDiag2 <span class="op">=</span> board <span class="kw">=&gt;</span> [board[<span class="dv">2</span>]<span class="op">,</span> board[<span class="dv">4</span>]<span class="op">,</span> board[<span class="dv">6</span>]]</a>
+<a class="sourceLine" id="cb10-4" title="4"></a>
+<a class="sourceLine" id="cb10-5" title="5"><span class="kw">const</span> winnerDiagonalExists <span class="op">=</span> board <span class="kw">=&gt;</span> isWinning <span class="kw">=&gt;</span></a>
+<a class="sourceLine" id="cb10-6" title="6">  <span class="at">isWinning</span>(<span class="at">getDiag1</span>(board)) <span class="op">||</span> <span class="at">isWinning</span>(<span class="at">getDiag2</span>(board))</a></code></pre></div>
+<p>Although <code>getWinnerId</code> is a little more inefficient that it need be, for brevity we will keep it as it is… We are still only working with a 3x3 grid. If we needed bigger grids, we could use several techniques (e.g. actually making sure the evaluation is lazy, checking only from the top left corners, winner configuration imprints…).</p>
+<h3 id="newgame"><code>newGame</code></h3>
+<p>We just need to return a reset game with incremented score of the winner. This is straightforward:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">const</span> newGame <span class="op">=</span> state <span class="kw">=&gt;</span> winnerId <span class="kw">=&gt;</span> (<span class="op">{</span></a>
+<a class="sourceLine" id="cb11-2" title="2">  ...<span class="at">state</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb11-3" title="3">  <span class="dt">board</span><span class="op">:</span> <span class="va">state</span>.<span class="va">board</span>.<span class="at">fill</span>(<span class="dv">0</span>)<span class="op">,</span></a>
+<a class="sourceLine" id="cb11-4" title="4">  [<span class="vs">`scoreOfPlayer</span><span class="sc">${</span>winnerId<span class="sc">}</span><span class="vs">`</span>]<span class="op">:</span> state[<span class="vs">`scoreOfPlayer</span><span class="sc">${</span>winnerId<span class="sc">}</span><span class="vs">`</span>] <span class="op">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb11-5" title="5"><span class="op">}</span>)</a></code></pre></div>
+<h3 id="nextstep"><code>nextStep</code></h3>
+<p>Putting it all together, we are finally able to implement <code>nextStep</code> in a clear manner. Each turn will look as follows.</p>
+<ol type="1">
+<li>If there is no winner, we return a new state with the clicked tile changed to the player on turn.</li>
+<li>Otherwise start a new game.</li>
+</ol>
+<p>By now it should be obvious that in order to achieve this, we need functions <code>newState</code>, <code>newGame</code> we’ve just implemented and pass them the arguments that they take. It should also be obvious now why they take some arguments, which they would not really need (such as <code>playerOnTurn</code>): among others, to prevent recounting and simplify unit testing.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">const</span> nextStep <span class="op">=</span> tileId <span class="kw">=&gt;</span> (state<span class="op">,</span> _) <span class="kw">=&gt;</span> (</a>
+<a class="sourceLine" id="cb12-2" title="2">  playerOnTurn <span class="kw">=&gt;</span> (</a>
+<a class="sourceLine" id="cb12-3" title="3">    newState <span class="kw">=&gt;</span> (</a>
+<a class="sourceLine" id="cb12-4" title="4">      winnerId <span class="kw">=&gt;</span> <span class="op">!</span>winnerId</a>
+<a class="sourceLine" id="cb12-5" title="5">        <span class="op">?</span> newState</a>
+<a class="sourceLine" id="cb12-6" title="6">        : <span class="at">newGame</span>(state)(winnerId)</a>
+<a class="sourceLine" id="cb12-7" title="7">      )(<span class="at">getWinnerId</span>(<span class="va">newState</span>.<span class="at">board</span>)(playerOnTurn))</a>
+<a class="sourceLine" id="cb12-8" title="8">    )(<span class="at">newState</span>(state)(tileId)(playerOnTurn))</a>
+<a class="sourceLine" id="cb12-9" title="9">  )(<span class="at">getIdOfPlayerOnTurn</span>(<span class="va">state</span>.<span class="at">board</span>))</a></code></pre></div>
+<p>Notice how we need to count the newState <em>before</em> deciding whether to return it or the new game. This is because all of the functions we’ve implemented actually count with the fact that a turn has just been made.</p>
+<h1 id="result">Result</h1>
+<p>That’s really all there is to it in terms of implementation. Adding a couple of lines of CSS, the whole result can be seen running in the following snippet.</p>
+<div class="glitch-embed-wrap" style="height: 420px; width: 100%;">
+<iframe src="https://glitch.com/embed/#!/embed/pm-tictactoe?path=src/game.pure.js&amp;previewSize=100" title="pm-tictactoe on Glitch" style="height: 100%; width: 100%; border: 0;">
+</iframe>
+</div>
+<p>A seemingly easy function <code>nextStep</code> turned into quite a beast. We wouldn’t have made it without function decomposition, which is <em>essential</em> not only in programming but especially in FP. However, it was really worth it. The entire <code>game.pure.js</code> is <em>without any side effects</em>. Each one of its functions is easy to parallelize, unit test, type and much more. Once the time comes, this will be covered in one of the next articles.</p>
+    </section>
+    
+    <section class="footer">
+        <div class="line"></div>
+        Read more articles on: <a href="../topics/pure-modules">pure-modules</a>, <a href="../topics/functional-programming">functional-programming</a>, <a href="../topics/es6">es6</a>.
+    </section>
+    
+</article>
+
+            <p>
+                <a href="#" class="btn up"><i class="fa fa-arrow-up"></i>
+                <span class="sr-only">Go up</span></a>
+            </p>
+        </div>
+    </main>
+    <footer>
+        <div class="body">
+            &copy; Adam Fiedler 2020
+            <div class="heart">
+                Running with &hearts; on
+                <a href="https://jaspervdj.be/hakyll">Hakyll</a>. Here's the <a href="https://github.com/fiedlr/fiedlr">source</a>.
+            </div>
+        </div>
+        <div class="social">
+            <a class="em" href="mailto:info@fiedlr.sk">
+                <i class="fa fa-envelope"><span class="sr-only">Write me an e-mail</span></i>
+            </a>
+            <a class="tw" href="https://twitter.com/fiedlr">
+                <i class="fa fa-twitter"><span class="sr-only">Tweet me</span></i>
+            </a>
+            <a class="li" href="https://linkedin.com/in/fiedlr">
+                <i class="fa fa-linkedin"><span class="sr-only">I'm on LinkedIn</span></i>
+            </a>
+            <a class="gh" href="https://github.com/fiedlr">
+                <i class="fa fa-github"><span class="sr-only">My GitHub projects</span></i>
+            </a>
+        </div>
+    </footer>
+    
+</body>
+</html>

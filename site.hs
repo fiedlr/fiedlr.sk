@@ -15,10 +15,13 @@ defaultTeaser = "coding a bit"
 texTemplate :: String
 texTemplate = "template"
 
+customConf :: Configuration
+customConf = defaultConfiguration { destinationDirectory = "docs" }
+
 main :: IO ()
 main = do
     temp <- readFile $ texTemplate <.> "tex"
-    hakyll $ do
+    hakyllWith customConf $ do
         match (
             "images/*" .||. fromList [
                 ".htaccess",
