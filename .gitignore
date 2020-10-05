@@ -6,6 +6,7 @@ syntax.css
 !.htaccess
 !.gitignore
 !_site
+!.nojekyll
 
 % testing folders
 posts/math
