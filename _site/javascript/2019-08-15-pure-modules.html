@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Adam Fiedler">
+    <title>Is JavaScript Ready for Pure ES6 Modules? | Adam Fiedler</title>
+    <meta name="description" content="Functional programming (FP) is not new to JavaScript. One proof of that might be the fact that there exist several helpful FP libraries like Ramda. However, the real question is if JS itself evolved enough to write isolated pieces of code in this paradigm.">
+    <meta property="og:title" content="Is JavaScript Ready for Pure ES6 Modules? | Adam Fiedler">
+    <meta property="og:description" content="Functional programming (FP) is not new to JavaScript. One proof of that might be the fact that there exist several helpful FP libraries like Ramda. However, the real question is if JS itself evolved enough to write isolated pieces of code in this paradigm.">
+    <meta property="og:type" content="article">
+    <meta property="og:article:author" content="Adam Fiedler">
+    <meta property="og:url" content="https://fiedler.sk/javascript/2019-08-15-pure-modules.html">
+    <meta property="og:image" content="https://fiedler.sk/images/tile.png">
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&family=Source+Sans+Pro:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/default.css">
+    <link rel="stylesheet" type="text/css" href="../css/syntax.css">
+    
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="../images/tile.png" alt="Adam Fiedler - Silhouette" class="round">
+            <div class="caption">Adam Fiedler</div>
+        </div>
+        <nav>
+            <a href="../">Recent</a>
+            <a href="../blog">Blog</a> <a href="../essays">Essays</a> <a href="../haskell">Haskell</a> <a href="../javascript">Javascript</a>
+            <a href="../about">About</a>
+        </nav>
+    </header>
+    <main role="main">
+        <div class="body">
+            <div class="title">
+                <h1>Is JavaScript Ready for Pure ES6 Modules?</h1>
+            </div>
+            <article>
+    <section class="meta">
+        Posted on August 15, 2019 in <a href="../javascript">Javascript</a>
+        
+        
+        
+    </section>
+    <section class="body">
+        
+            
+            <p>Functional programming (FP) is not new to JavaScript. One proof of that might be the fact that there exist several helpful FP libraries like <a href="http://ramdajs.com">Ramda</a>. However, the real question is if JS itself evolved enough to write <em>isolated</em> pieces of code in this paradigm.</p>
+            
+        
+        <p>With the introduction of <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Arrow_functions">arrow functions</a> I came to realize that vanilla JS is much closer to the ideal of containing the necessary toolset to write what I call <em>pure modules</em>. Let me first precisely define what I imagine a pure module is, and describe why they are a useful concept. Then I’ll show why I think vanilla JS is ready for pure modules.</p>
+<h1 id="pure-es6-modules">Pure ES6 modules</h1>
+<p>By a pure ES6 module I mean a vanilla <a href="https://exploringjs.com/es6/ch_modules.html">ES6 module</a> such that</p>
+<ol type="1">
+<li>it calls only <em>pure</em> functions,</li>
+<li>it defines only <em>constants</em> and <em>functions</em>,</li>
+<li>it explicitly imports only other <em>pure</em> modules,</li>
+<li>it contains curried functions by default,</li>
+</ol>
+<p>and that all contained functions it defines</p>
+<ol start="5" type="1">
+<li>are <em>pure</em> functions,</li>
+<li>are <em>arrow</em> functions except for value constructors,</li>
+<li>return <em>expressions</em>.</li>
+</ol>
+<p>Note that the Condition 2 can leave out the mention of constants because they are pretty much 0-nary functions. Expressions in Condition 7 only mean that arrow functions are collapsed (definitions do not start with <code>{</code>). The consequence of this is that no expanded flow controls like loops are allowed. Therefore conditions 5-7 can also be summarized as all functions that the module defines are strictly of the form (value constructors are shown at the end of the article)</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">const</span> f <span class="op">=</span> x0 <span class="kw">=&gt;</span> x1 <span class="kw">=&gt;</span> ... <span class="kw">=&gt;</span> xn <span class="kw">=&gt;</span> y</a></code></pre></div>
+<p>Pure modules are useful precisely for the reasons FP is useful. They only force you really well to write consistent and reliable FP code in JS. In other words, with pure modules FP becomes a matter of style which can mostly be <em>linted</em> (although there might be some problems with Condition 2 in this area). Most importantly, marking a module as pure can give its user much advantage by providing certain assumptions.</p>
+<p>When a module is pure, anybody who uses it knows for a fact that it can easily be parallelized, unit tested and that it causes no side effects, hence it is very likely reliable. Code free of side effects isolated in pure modules can also lead to much better debugging tools. Leaving out the unnecessary <code>;</code> should be safe, using a transpiler or not.</p>
+<p>For all of these reasons I think it should be our long-term <em>goal</em> to write as many pure modules as possible, and to introduce the practice of explicitly marking correct pure modules as pure (preferably in a visible place such as their names).</p>
+<h1 id="how-to-write-pure-modules">How to write pure modules</h1>
+<p>Writing pure modules is actually not hard at all. Functions in JS are <em>first-class citizens</em> (they can be passed around as they are objects), this necessary condition is clear. However, inspired by FP languages like Haskell, we actually need several more tools for <em>usable</em> pure modules. In the following sections I discuss existing possibilities one by one.</p>
+<h2 id="currying-partial-application">Currying &amp; Partial application</h2>
+<p>Luckily for us, arrow functions are right folded so the aforementioned example is interpreted</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">const</span> f <span class="op">=</span> x0 <span class="kw">=&gt;</span> (x1 <span class="kw">=&gt;</span> (... <span class="kw">=&gt;</span> (xn <span class="kw">=&gt;</span> y)))</a></code></pre></div>
+<p>Therefore currying comes natural with arrow functions without any helper functions. Partial application works as a charm, in</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">const</span> modCounter <span class="op">=</span> modulo <span class="kw">=&gt;</span> x <span class="kw">=&gt;</span> x <span class="op">%</span> modulo</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw">const</span> mod5Counter <span class="op">=</span> <span class="at">modCounter</span>(<span class="dv">5</span>)</a></code></pre></div>
+<p><code>mod5Counter</code> is really a counter modulo 5.</p>
+<p>The only drawback is that the <em>order</em> of partially applied parameters cannot be changed in binary funcions this way (analogous to <em>sections</em>). That is why we can also define the helpful function <code>flip</code> as follows</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">const</span> flip <span class="op">=</span> f <span class="kw">=&gt;</span> x <span class="kw">=&gt;</span> y <span class="kw">=&gt;</span> <span class="at">f</span>(y)(x)</a></code></pre></div>
+<p>Now it is easy to define</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">const</span> remOf5 <span class="op">=</span> <span class="at">flip</span>(modCounter)(<span class="dv">5</span>)</a></code></pre></div>
+<p>where <code>remOf5(x)</code> really calculates the remainder after dividing <code>5</code> by <code>x</code>.</p>
+<p>What if we want to use uncurried functions as curried or vice versa? There are numerous solutions out there already. All in all, a <code>curry</code> function is not that difficult to define ourselves in modern JS, actually it is not that difficult to make it work for functions with any fixed number of parameters. This is a feature that would be really handy in JS, as it is common practice to have uncurried functions with more than two arguments. Consider the following example</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">const</span> curryHelper <span class="op">=</span> (...<span class="at">args</span>) <span class="kw">=&gt;</span></a>
+<a class="sourceLine" id="cb6-2" title="2">  f <span class="kw">=&gt;</span> <span class="at">f</span>(...<span class="at">args</span>)</a>
+<a class="sourceLine" id="cb6-3" title="3">     <span class="op">?</span> <span class="at">f</span>(...<span class="at">args</span>)</a>
+<a class="sourceLine" id="cb6-4" title="4">     : a <span class="kw">=&gt;</span> <span class="at">curryHelper</span>(...<span class="at">args</span><span class="op">,</span> a)(f)</a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="kw">const</span> currify <span class="op">=</span> <span class="at">curryHelper</span>()</a></code></pre></div>
+<p>This <code>currify</code> works on any function with a fixed number of parameters. <code>currify</code> for polyvariadic functions can be done only using an ending mark because it cannot know in advance if it receives another argument.</p>
+<p>An <code>uncurrify</code> function works similarly and can be defined as follows</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">const</span> uncurrify <span class="op">=</span> f <span class="kw">=&gt;</span></a>
+<a class="sourceLine" id="cb7-2" title="2">  (...<span class="at">args</span>) <span class="kw">=&gt;</span> <span class="va">args</span>.<span class="at">reduce</span>(</a>
+<a class="sourceLine" id="cb7-3" title="3">    (g<span class="op">,</span> x) <span class="kw">=&gt;</span> <span class="at">g</span>(x)<span class="op">,</span> f</a>
+<a class="sourceLine" id="cb7-4" title="4">  )</a></code></pre></div>
+<p>It again works for any function with a fixed number of arguments. Curried arrow functions in JS cannot be polyvariadic by definition.</p>
+<h2 id="let-...-in-...-expressions"><code>let ... in ...</code> expressions</h2>
+<p>For pure modules to be usable, we need a way how to save interim results within expressions themselves. This is obviously important not only for saving ourselves the trouble to copy and paste the same subexpressions over and over again. We have to take into account that the compiler has no way of knowing that it can <em>cache</em> the results.</p>
+<p>In Haskell, one uses <code>let ... in ...</code> expressions or <code>where</code> control blocks to achieve this. We’re again lucky in this arena. Although arguably not as convenient to use, Immediately Invoked Function Expressions (IIFE) are able to emulate <code>let</code>s in the pure modules world as long as we do not need anything else that we could expect of <code>let</code>s.</p>
+<p>A quick detour just to demonstrate this fact (you can skip safely skip this). In Haskell, <code>let</code> … <code>in</code> … are expressions and not control structures such as <code>where</code> because they can be used exactly as any other expressions. Therefore, if we have an expression of the form</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb8-1" title="1"><span class="dv">5</span> <span class="op">+</span> (<span class="kw">let</span> x <span class="op">=</span> <span class="at">f</span>(<span class="dv">5</span>) <span class="kw">in</span> <span class="dv">2</span> <span class="op">*</span> x <span class="op">*</span> x)</a></code></pre></div>
+<p>it translates to nothing other than <code>5 + 2 * f(5) * f(5)</code>. Notice also that the same result would be obtained moving <code>let x = f(5) in</code> higher in the expression, hence here it would not matter if we used <code>where</code> instead. The strength of <code>let ... in ...</code> is also evident. Unlike <code>where</code>, it can depend on <em>other</em> interim results made somewhere higher in the expression (<code>where</code> can only depend on the function input).</p>
+<p>Back to JavaScript. When you think about it, IIFE do the same exact thing. In the following example</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">const</span> g <span class="op">=</span> <span class="dv">5</span> <span class="op">+</span> (x <span class="kw">=&gt;</span> <span class="dv">2</span> <span class="op">*</span> x <span class="op">*</span> x)(<span class="at">f</span>(<span class="dv">5</span>))</a></code></pre></div>
+<p><code>g</code> will calculate <code>f(5)</code> only once, and only then it will substitute it for <code>x</code>. What is more, the scope of the arrow function can be extended exactly as the scope of the <code>let</code> expressions, and interim results made in a higher IIFE can be put into some IIFE lower in the chain. The syntax can easily be changed with a transpiler.</p>
+<h2 id="composition-chaining">Composition &amp; Chaining</h2>
+<p>As you have surely heard, function composition/chaining is very important in the FP world. Unfortunately, there is no native operator in JS that would realize this, and we would like to avoid expressions like <code>f(g(h(i(j(k(l(x))))))</code> in pure modules.</p>
+<p>Again either we can use a pre-existing solution or come up with our own operator <code>o</code> which would emulate function composition. In Haskell, for example, one can chain several functions together by using several compositions <code>.</code>. To avoid redundant brackets resulting from JS syntax, we should make an exception and make <code>o</code> uncurried and <em>polyvariadic</em> (even though it doesn’t have to be).</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">const</span> o <span class="op">=</span> (...<span class="at">fs</span>) <span class="kw">=&gt;</span> b <span class="kw">=&gt;</span></a>
+<a class="sourceLine" id="cb10-2" title="2">  <span class="va">fs</span>.<span class="at">reduceRight</span>(</a>
+<a class="sourceLine" id="cb10-3" title="3">    (x<span class="op">,</span> f) <span class="kw">=&gt;</span> <span class="at">f</span>(x)<span class="op">,</span> b</a>
+<a class="sourceLine" id="cb10-4" title="4">  )</a></code></pre></div>
+<p>Now if you type something like</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">const</span> plusplus5 <span class="op">=</span> <span class="at">o</span>(plus5<span class="op">,</span> plus5)</a></code></pre></div>
+<p>then <code>plusplus5(10)</code> will yield 20.</p>
+<h2 id="typings">Typings</h2>
+<p>FP code without types is like a skilled hand without a body. It is true that JS was simply not <em>meant</em> to be explicitly typed. There have been several attempts to improve the situation with extensions like <a href="https://www.typescriptlang.org/">TypeScript</a>, but again I’m reviewing vanilla JS.</p>
+<h3 id="value-constructors">Value constructors</h3>
+<p>The first idea comes again from an inspiration in Haskell. We can construct values using functions called <em>value constructors</em>. Again to our luck, constructors already exist in JS and are set and called by the <code>new</code> operator. We can nicely force JS this way to remember the used value constructor</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">function</span> <span class="at">Integer</span>(x) <span class="op">{</span></a>
+<a class="sourceLine" id="cb12-2" title="2">  <span class="kw">this</span>.<span class="at">Num</span> <span class="op">=</span> x<span class="op">;</span></a>
+<a class="sourceLine" id="cb12-3" title="3"><span class="op">}</span></a>
+<a class="sourceLine" id="cb12-4" title="4"></a>
+<a class="sourceLine" id="cb12-5" title="5"><span class="kw">const</span> Ex <span class="op">=</span> <span class="kw">new</span> <span class="at">Integer</span>(x)</a></code></pre></div>
+<p>Here <code>Integer</code> is called a value constructor for the type <code>Num</code>. Values of type <code>Num</code> could be constructed using other value constructors if they were defined, such as <code>Natural</code>, <code>Float</code>, etc. Both value constructors and type names have to be capitalized so that they are distinguishable from regular functions.</p>
+<p>Why not pack the value and its type just in some plain object? Because this way the value constructor name is <em>reserved</em>. You cannot define a different value constructor with the same name.</p>
+<p>Using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#Object_destructuring">object destructuring</a> we can now emulate type checking in function methods like this</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">const</span> typedPlus <span class="op">=</span> (<span class="op">{</span><span class="dt">Num</span><span class="op">:</span> a<span class="op">}</span>) <span class="kw">=&gt;</span> (<span class="op">{</span><span class="dt">Num</span><span class="op">:</span> b<span class="op">}</span>) <span class="kw">=&gt;</span> a <span class="op">+</span> b</a></code></pre></div>
+<h3 id="pattern-matching">Pattern matching</h3>
+<p>There is one other advantage of using the <code>new</code> technique for value constructing. If we use the following function to return types</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">const</span> typeOf <span class="op">=</span> v <span class="kw">=&gt;</span> <span class="va">v</span>.<span class="va">__proto__</span>.<span class="va">constructor</span>.<span class="at">name</span></a></code></pre></div>
+<p>a mock object should not be able to fool pattern matching based on <code>typeOf</code> because it should return only on correctly constructed values as defined.</p>
+<p>The current JS standard pattern matching can be made readably only over one paramater and that is either using switch or an object traversing like <a href="https://ultimatecourses.com/blog/deprecating-the-switch-statement-for-object-literals">shown here</a>. Since object traversing works in collapsed arrow functions, I strictly prefer it to <code>switch</code>.</p>
+<p>First we can create a helper function <code>caseOf</code> which does some IIFE magic so that type checking and pattern matching works at the same time.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">const</span> caseOf <span class="op">=</span> f <span class="kw">=&gt;</span> v <span class="kw">=&gt;</span> <span class="at">f</span>(v)[<span class="at">typeOf</span>(v)]</a></code></pre></div>
+<p>It takes a pattern matching function over the type of <code>v</code> and returns a function taking argument which is being checked against.</p>
+<p>You can try it out on the following example.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">const</span> decrement <span class="op">=</span> <span class="at">caseOf</span>((<span class="op">{</span><span class="dt">Num</span><span class="op">:</span> x<span class="op">}</span>) <span class="kw">=&gt;</span></a>
+<a class="sourceLine" id="cb16-2" title="2">  (<span class="op">{</span></a>
+<a class="sourceLine" id="cb16-3" title="3">    <span class="dt">Integer</span><span class="op">:</span> x <span class="op">-</span> <span class="dv">1</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb16-4" title="4">    <span class="dt">Natural</span><span class="op">:</span> x <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">?</span> x <span class="op">-</span> <span class="dv">1</span> : <span class="dv">0</span></a>
+<a class="sourceLine" id="cb16-5" title="5">  <span class="op">}</span>)</a>
+<a class="sourceLine" id="cb16-6" title="6">)</a></code></pre></div>
+<p>Trying a different type like <code>decrement("x")</code> fails, exactly as trying a non-matching value constructor such as <code>decrement(new Float(2.5))</code>.</p>
+<p>This is only a proof of concept. For a more usable pattern matching such as matching over more than one parameter, new JS syntax would probably need to be implemented.</p>
+<p>It would be a much needed addition to the language, after which better support for pure modules could come closer to reality.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>I’ve defined what I imagine behind a pure modules and argued for their introduction to existing codebases. The idea is to introduce a practice of creating isolated JS places containing strictly guidelined FP code. Most importantly, the idea is also to label these places as pure modules visibly so that developers can make assumpions about the functions they export.</p>
+<p>Then I’ve hopefully showed some hints that vanilla JS should be ready for complex pure modules to a certain extent. To make sure of that, the logical next step is to try creating a whole project based upon pure modules with a very limited side-effect scope. If you create such a project in the mean time before I make time to do so, make sure to let me know.</p>
+    </section>
+    
+    <section class="footer">
+        <div class="line"></div>
+        Read more articles on: <a href="../topics/pure-modules">pure-modules</a>, <a href="../topics/functional-programming">functional-programming</a>, <a href="../topics/es6">es6</a>.
+    </section>
+    
+</article>
+
+            <p>
+                <a href="#" class="btn up"><i class="fa fa-arrow-up"></i>
+                <span class="sr-only">Go up</span></a>
+            </p>
+        </div>
+    </main>
+    <footer>
+        <div class="body">
+            &copy; Adam Fiedler 2020
+            <div class="heart">
+                Running with &hearts; on
+                <a href="https://jaspervdj.be/hakyll">Hakyll</a>. Here's the <a href="https://github.com/fiedlr/fiedlr">source</a>.
+            </div>
+        </div>
+        <div class="social">
+            <a class="em" href="mailto:info@fiedlr.sk">
+                <i class="fa fa-envelope"><span class="sr-only">Write me an e-mail</span></i>
+            </a>
+            <a class="tw" href="https://twitter.com/fiedlr">
+                <i class="fa fa-twitter"><span class="sr-only">Tweet me</span></i>
+            </a>
+            <a class="li" href="https://linkedin.com/in/fiedlr">
+                <i class="fa fa-linkedin"><span class="sr-only">I'm on LinkedIn</span></i>
+            </a>
+            <a class="gh" href="https://github.com/fiedlr">
+                <i class="fa fa-github"><span class="sr-only">My GitHub projects</span></i>
+            </a>
+        </div>
+    </footer>
+    
+</body>
+</html>

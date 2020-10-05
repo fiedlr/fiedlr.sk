@@ -1,11 +1,11 @@
 .*
 _*
-site
 *.csl
 syntax.css
 
 !.htaccess
 !.gitignore
+!_site
 
 % testing folders
 posts/math
