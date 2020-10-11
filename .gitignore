@@ -1,7 +1,6 @@
 .*
 _*
 *.csl
-syntax.css
 
 !.htaccess
 !.gitignore
