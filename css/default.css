@@ -1,4 +1,4 @@
-/* Adam Fiedler (c) 2019 (all rights reseved) */
+/* Adam Fiedler (c) 2021 (all rights reserved) */
 
 * {
   -moz-box-sizing: border-box;
@@ -333,6 +333,10 @@ figure img {
 
   .up {
     display: none;
+  }
+
+  figure {
+    text-align: left;
   }
 }
 
