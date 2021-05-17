@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Adam Fiedler">
+    <title>A short note on typeclasses in TypeScript | Adam Fiedler</title>
+    <meta name="description" content="At first glance, types in TypeScript do not have to make much sense to a Haskeller. This is my attempt to resolve some of the confusion that I do not feel is handled well even in the TypeScript official handbook. Even though one might argue that it is rather a matter of perspective ">
+    <meta property="og:title" content="A short note on typeclasses in TypeScript | Adam Fiedler">
+    <meta property="og:description" content="At first glance, types in TypeScript do not have to make much sense to a Haskeller. This is my attempt to resolve some of the confusion that I do not feel is handled well even in the TypeScript official handbook. Even though one might argue that it is rather a matter of perspective ">
+    <meta property="og:type" content="article">
+    <meta property="og:article:author" content="Adam Fiedler">
+    <meta property="og:url" content="https://fiedler.sk/javascript/2020-02-20-thoughts-on-types-and-typescript.html">
+    <meta property="og:image" content="https://fiedler.sk/images/tile.png">
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&family=Source+Sans+Pro:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/default.css">
+    <link rel="stylesheet" type="text/css" href="../css/syntax.css">
+    
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="../images/tile.png" alt="Adam Fiedler - Silhouette" class="round">
+            <div class="caption">Adam Fiedler</div>
+        </div>
+        <nav>
+            <a href="../">Recent</a>
+            <a href="../blog">Blog</a> <a href="../haskell">Haskell</a> <a href="../javascript">Javascript</a>
+            <a href="../about">About</a>
+        </nav>
+    </header>
+    <main role="main">
+        <div class="body">
+            <div class="title">
+                <h1>A short note on typeclasses in TypeScript</h1>
+            </div>
+            <article>
+    <section class="meta">
+        Posted on February 20, 2020 in <a href="../javascript">Javascript</a>
+        
+        
+        
+    </section>
+    <section class="body">
+        
+            
+            <p>At first glance, types in TypeScript do not have to make much sense to a Haskeller. This is my attempt to resolve some of the confusion that I do not feel is handled well even in the TypeScript official handbook. Even though one might argue that it is rather a matter of perspective </p>
+            
+        
+        <h1 id="problem">Problem</h1>
+<p>Let’s say we want to have a polymorphic function</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode typescript"><code class="sourceCode typescript"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">function</span> <span class="fu">Foo</span><span class="op">&lt;</span>T<span class="op">&gt;</span>(val<span class="op">:</span> T) <span class="op">{</span></a>
+<a class="sourceLine" id="cb1-2" title="2">  <span class="op">...</span></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="op">}</span></a></code></pre></div>
+<p>such that a function <code>f :: T -&gt; T</code> is defined for <code>val</code></p>
+<h1 id="interfaces-are-almost-typeclasses">Interfaces are (almost) typeclasses</h1>
+<p>Push and pop with Stack and Queue! interface Stack is not really a good example because TypeScript ducktypes and there is not a single source of truth for the type Stack, therefore something unexpected can happen! Stack push/po Let’s say we define a type <code>Node</code> in TypeScript using <code>interface</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode typescript"><code class="sourceCode typescript"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">interface</span> Num<span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">{</span></a>
+<a class="sourceLine" id="cb2-2" title="2">  negate<span class="op">:</span> (n<span class="op">:</span> T) <span class="kw">=&gt;</span> T</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="op">}</span></a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="kw">type</span> Instance<span class="op">&lt;</span>TypeClass<span class="op">,</span> Type<span class="op">&gt;</span> <span class="op">=</span></a></code></pre></div>
+<p>Consider now the following two examples</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode typescript"><code class="sourceCode typescript"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">const</span> n1 <span class="op">:</span> <span class="bu">Node</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">{</span></a>
+<a class="sourceLine" id="cb3-2" title="2">  val<span class="op">:</span> <span class="st">&quot;Hello World!&quot;</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb3-3" title="3">  show<span class="op">:</span> () <span class="kw">=&gt;</span> val</a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="op">}</span></a>
+<a class="sourceLine" id="cb3-5" title="5"></a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="kw">const</span> n2 <span class="op">:</span> <span class="bu">Node</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">{</span></a>
+<a class="sourceLine" id="cb3-7" title="7">  val<span class="op">:</span> <span class="st">&quot;Yeey&quot;</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb3-8" title="8">  show<span class="op">:</span> () <span class="kw">=&gt;</span> <span class="op">{</span> <span class="fu">performSomeSideEffect</span>()<span class="op">;</span> <span class="op">}</span></a>
+<a class="sourceLine" id="cb3-9" title="9"><span class="op">}</span></a></code></pre></div>
+<p>In TypeScript one would say that both <code>n1</code> and <code>n2</code> are of type <code>Node&lt;string&gt;</code>. However, this is slightly misleading. We do not know neither how <code>f</code> is implemented, nor what it does. In other words, we do not have a single source of truth for what a value of <code>Node&lt;string&gt;</code> is.</p>
+<p>It might be helpful to consider that types in TypeScript are, in fact, what <em>typeclasses</em> are in Haskell. When a value <code>x</code> is of type <code>Node&lt;string&gt;</code>, we only have a guarantee that we can call functions given by <code>Node&lt;string&gt;</code> (constants can be taken as 0-nary functions) on <code>x</code>. However, there is no guarantee if these functions behave <em>consistently</em> when we have a collection of such values.</p>
+<h1 id="can-we-avoid-this-problem">Can we avoid this problem?</h1>
+<p>When we want a function on <code>Node</code> to behave consistently across any value of this type(class), we should extract it to a <em>typeclass</em>. Really we just want to make sure that we can call a particular function in polymorphic functions, there is no need to pack this function to values. We can simply create a typecheck and then call a regular function on the value instead.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode typescript"><code class="sourceCode typescript"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">interface</span> Num <span class="op">{</span></a>
+<a class="sourceLine" id="cb4-2" title="2">  negate<span class="op">:</span> Num <span class="kw">=&gt;</span> Num</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="op">}</span></a>
+<a class="sourceLine" id="cb4-4" title="4"></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="kw">type</span> Instance<span class="op">&lt;</span>C<span class="op">,</span> T<span class="op">&gt;</span> <span class="op">=</span> T <span class="kw">extends</span> <span class="kw">keyof</span> C <span class="op">?</span> C<span class="op">[</span>T<span class="op">]</span> <span class="op">:</span> <span class="dt">never</span></a>
+<a class="sourceLine" id="cb4-6" title="6"></a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="kw">function</span> <span class="fu">Type</span>() <span class="op">:</span> <span class="bu">Node</span><span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">{</span></a>
+<a class="sourceLine" id="cb4-8" title="8"></a>
+<a class="sourceLine" id="cb4-9" title="9"></a>
+<a class="sourceLine" id="cb4-10" title="10"><span class="op">}</span></a>
+<a class="sourceLine" id="cb4-11" title="11"></a>
+<a class="sourceLine" id="cb4-12" title="12"><span class="kw">function</span> <span class="fu">ValueConstructor</span>(val<span class="op">:</span> T) <span class="op">:</span> <span class="bu">Node</span><span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">{</span></a>
+<a class="sourceLine" id="cb4-13" title="13">  <span class="cf">return</span> <span class="op">{</span></a>
+<a class="sourceLine" id="cb4-14" title="14">    val<span class="op">:</span> val<span class="op">,</span></a>
+<a class="sourceLine" id="cb4-15" title="15"></a>
+<a class="sourceLine" id="cb4-16" title="16">  <span class="op">};</span></a>
+<a class="sourceLine" id="cb4-17" title="17"><span class="op">}</span></a>
+<a class="sourceLine" id="cb4-18" title="18"></a>
+<a class="sourceLine" id="cb4-19" title="19"><span class="kw">function</span> <span class="fu">negate</span>(val<span class="op">:</span> Instance<span class="op">&lt;</span>Num<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;</span>) <span class="op">{</span></a>
+<a class="sourceLine" id="cb4-20" title="20">  <span class="cf">return</span> <span class="dv">-1</span> <span class="op">*</span> <span class="fu">parseInt</span>(val)<span class="op">;</span></a>
+<a class="sourceLine" id="cb4-21" title="21"><span class="op">}</span></a>
+<a class="sourceLine" id="cb4-22" title="22"></a>
+<a class="sourceLine" id="cb4-23" title="23"><span class="kw">function</span> <span class="fu">f</span><span class="op">&lt;</span>T<span class="op">&gt;</span>(val<span class="op">:</span> Instance<span class="op">&lt;</span>Num<span class="op">,</span> T<span class="op">&gt;</span>) <span class="op">{</span></a>
+<a class="sourceLine" id="cb4-24" title="24">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb4-25" title="25">  <span class="fu">negate</span>(val)<span class="op">;</span></a>
+<a class="sourceLine" id="cb4-26" title="26"><span class="op">}</span></a></code></pre></div>
+    </section>
+    
+    <section class="footer">
+        <div class="line"></div>
+        Read more articles on: <a href="../topics/types">types</a>, <a href="../topics/typescript">typescript</a>.
+    </section>
+    
+</article>
+
+            <p>
+                <a href="#" class="btn up"><i class="fa fa-arrow-up"></i>
+                <span class="sr-only">Go up</span></a>
+            </p>
+        </div>
+    </main>
+    <footer>
+        <div class="body">
+            &copy; Adam Fiedler 2020
+            <div class="heart">
+                Running with &hearts; on
+                <a href="https://jaspervdj.be/hakyll">Hakyll</a>. Here's the <a href="https://github.com/fiedlr/fiedlr">source</a>.
+            </div>
+        </div>
+        <div class="social">
+            <a class="em" href="mailto:info@fiedlr.sk">
+                <i class="fa fa-envelope"><span class="sr-only">Write me an e-mail</span></i>
+            </a>
+            <a class="tw" href="https://twitter.com/fiedlr">
+                <i class="fa fa-twitter"><span class="sr-only">Tweet me</span></i>
+            </a>
+            <a class="li" href="https://linkedin.com/in/fiedlr">
+                <i class="fa fa-linkedin"><span class="sr-only">I'm on LinkedIn</span></i>
+            </a>
+            <a class="gh" href="https://github.com/fiedlr">
+                <i class="fa fa-github"><span class="sr-only">My GitHub projects</span></i>
+            </a>
+        </div>
+    </footer>
+    
+</body>
+</html>
