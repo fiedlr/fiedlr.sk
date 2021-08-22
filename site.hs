@@ -28,7 +28,8 @@ main = do
                 "browserconfig.xml",
                 "robots.txt",
                 "favicon.ico",
-                "CNAME"
+                "CNAME",
+                "googlef0dd479df4515f1e.html"
             ]
             ) $ do
                 route   idRoute
