@@ -23,7 +23,7 @@ main = do
     temp <- readFile $ texTemplate <.> "tex"
     hakyllWith customConf $ do
         match (
-            "images/*" .||. fromList [
+            "images/*" .||. "files/*" .||. fromList [
                 ".htaccess",
                 "browserconfig.xml",
                 "robots.txt",
