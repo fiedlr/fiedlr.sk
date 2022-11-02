@@ -50,7 +50,6 @@
     <section class="body">
         
             
-            <p>We don’t want bugs in our code, period. Bugs are not only annoying, they can cost us <a href="https://rekt.news/leaderboard/">millions of dollars</a> if they go unnoticed. No matter how hard we try, every time we remove a bug, another pops up in a seemingly unrelated part of the code base. That is why we do <em>tests:</em> to make sure that the program works as expected when we type something in or interact in any other way.</p>
             
         
         <p>
@@ -58,18 +57,19 @@
 <img src="https://runtimeverification.com/assets/img/blog/warning-code-explosive.png" />
 </figure>
 </p>
-<p>We have tests for everything: unit tests, property tests, visual tests, end-to-end tests, integration tests, smoke tests, stress/load testing, manual testing…<br />
+<p>We don’t want bugs in our code, period. Bugs are not only annoying, they can cost us <a href="https://rekt.news/leaderboard/">millions of dollars</a> if they go unnoticed. No matter how hard we try, every time we remove a bug, another pops up in a seemingly unrelated part of the code base.</p>
+<p>
+<figure>
+<img src="https://runtimeverification.com/assets/img/blog/lib-photograph.jpeg" alt="Source: U.S. Naval Historical Center Online Library Photograph NH 96566-KN" /><figcaption>Source: U.S. Naval Historical Center Online Library Photograph <a href="https://www.history.navy.mil/our-collections/photography/numerical-list-of-images/nhhc-series/nh-series/NH-96000/NH-96566-KN.html">NH 96566-KN</a></figcaption>
+</figure>
+</p>
+<p>That is why we do <em>tests:</em> to make sure that the program works as expected when we type something in or interact in any other way. We have tests for everything: unit tests, property tests, visual tests, end-to-end tests, integration tests, smoke tests, stress/load testing, manual testing…<br />
 We even do <em>regression testing</em> which checks whether our code updates broke the functionality that already worked in the past! In other words, we have learned to <em>live with tests</em>: we put little green badges in our repositories saying “100% test coverage” so that we can sleep peacefully, knowing that every part of our code was properly tested.</p>
 <p>We might sleep peacefully until we come across the following quote:</p>
 <blockquote>
 <p>“… As we know, there are known knowns; there are things we know we know. We also know there are known unknowns; that is to say we know there are some things we do not know. But there are also unknown unknowns - the ones we don’t know we don’t know.” — Donald Rumsfeld [1]</p>
 </blockquote>
 <p>To put this in perspective, we know there are some bugs we need to fix (known knowns). We would also expect that if we handle a new feature in an ad hoc manner, it might later come to bite us (known unknowns). The worst kind of bugs, however, are those that we are <em>not</em> expecting (an unknown unknown), i.e., the core functionality we thought was bullet-proof and then tragically fails. In other words, when there’s an error in the functionality that has been <em>thoroughly tested</em>.</p>
-<p>
-<figure>
-<img src="https://runtimeverification.com/assets/img/blog/lib-photograph.jpeg" alt="Source: U.S. Naval Historical Center Online Library Photograph NH 96566-KN" /><figcaption>Source: U.S. Naval Historical Center Online Library Photograph <a href="https://www.history.navy.mil/our-collections/photography/numerical-list-of-images/nhhc-series/nh-series/NH-96000/NH-96566-KN.html">NH 96566-KN</a></figcaption>
-</figure>
-</p>
 <p>Rumsfeld’s thesis has also been extended with <a href="https://www.lacan.com/zizekrumsfeld.htm">the fourth category</a> [2], <em>the unknown knowns</em>: the suppositions we <em>pretend</em> not to know. There is an elephant in the room: tests are great only for catching bugs that we would expect. After all, we are testing only what we know might fail and only on inputs we assume to be critical. For other kinds of inputs, we assume they are handled automatically, whereas in reality, that is far from guaranteed. Much harm can be done if we fail to acknowledge this.</p>
 <p>Despite all the tragedies, we have learned to live with the idea that for most applications, tests and Q&amp;A are enough. One can argue that tests have worked quite well for us and that the world cannot be perfect. Let us make a simple comparison, then. Would you walk on a bridge built of a new rock solid material, knowing that no external auditing or inspection was done, but a group of 20 vehicles rode on every square foot of its surface? The bridge was indeed “100% tested” for its use case. We only want it to stand still for passing vehicles. What happens when we get an unexpected input such as <a href="http://www.bridgesofdublin.ie/bridge-building/disasters/angers-bridge-france-1850"><em>resonance</em></a>? Well-written tests are great, but something that we forget to test might always crop up.</p>
 <h2 id="when-tests-fail">When Tests Fail</h2>
