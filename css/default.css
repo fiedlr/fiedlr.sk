@@ -156,11 +156,11 @@ a:hover {
   color: #ff9c8b;
 }
 
-p a {
+p a, li a {
   border-bottom: 1px solid #ededed;
 }
 
-p a:hover {
+p a:hover, li a:hover {
   border-bottom: 1px solid #ff9c8b;
 }
 
