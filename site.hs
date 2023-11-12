@@ -71,7 +71,7 @@ main = do
             compile $ do
                 posts <- recentFirst =<< loadAll (pattern .&&. hasNoVersion)
                 let archiveCtx   = listField "posts" postCtx (return posts)
-                                <> constField "title" ('#' : tag)
+                                <> constField "title" ("Posts about #" ++ tag)
                                 <> constField "desc" defaultTeaser
                                 <> pageCtx
 
