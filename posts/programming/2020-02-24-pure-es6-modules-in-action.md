@@ -9,7 +9,7 @@ One thing is theory, another is practice.
 Let's look at one particular example of using pure modules to demonstrate their
 feasibility and advantages."
 modified: true
-tags: pure-modules, functional-programming, es6
+tags: pure-modules, functional-programming, es6, javascript
 ---
 
 TicTacToe has been a famous game known for centuries and incindentally, also used in the official [React tutorial](https://reactjs.org/tutorial/tutorial.html).

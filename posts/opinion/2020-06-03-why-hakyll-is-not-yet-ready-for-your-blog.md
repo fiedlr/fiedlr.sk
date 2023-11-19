@@ -6,7 +6,7 @@ Needless to say that this very blog runs on Hakyll.
 However, nothing can advance without somebody laying out loud the things that don't work.
 And with Hakyll it seems like such a list is long overdue."
 modified: true
-tags: hakyll
+tags: haskell, hakyll, cons
 ---
 
 TLDR: I've spent countless of hours to make *basic* things work and I *still* do.
