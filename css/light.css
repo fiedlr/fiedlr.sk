@@ -88,17 +88,16 @@ header {
   color:#e67360
 }
 .social {
-  text-align:center;
-  font-size:1.3rem;
-  margin:1rem 0
+  display: inline-block;
+  font-size:1rem;
 }
 .social a {
   display:inline-block;
-  width:1.7em;
-  height:1.7em;
+  text-align: center;
+  width:1.6em;
+  height:1.6em;
   padding:0.2em;
   overflow:hidden;
-  margin:0 0.8%
 }
 .social a:hover {
   background-color:#fff;
@@ -284,8 +283,11 @@ figure img {
     display:block
   }
   .caption {
-    margin:0.7rem 0 2rem;
-    text-align:left
+    margin-top: 0.7rem;
+    text-align: left;
+  }
+  .logo {
+    margin:0 0 2rem;
   }
   header {
     padding:4rem 0;
@@ -295,11 +297,7 @@ figure img {
     height:100%
   }
   .social {
-    position:fixed;
-    width:25%;
-    height:30px;
-    right:0;
-    bottom:5px
+    display: block;
   }
   main {
     width:75%;
