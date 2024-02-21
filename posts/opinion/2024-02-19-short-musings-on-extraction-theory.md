@@ -46,9 +46,10 @@ Extraction is only useful insofar as it is *consistent* across the entire basket
 It is a measure per particle in the basket.
 This is why one needs to ensure an *even* extraction, where each particle is in contact with roughly the same amount of water.
 There are many ways to achieve this in normal ways, like
-- proper tamping,
-- using a WDT tool,
-- having a dry basket before using.
+
+* proper tamping,
+* using a WDT tool,
+* having a dry basket before using.
 
 # Working with the recipe
 
