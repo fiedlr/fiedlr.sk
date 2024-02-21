@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Adam Fiedler">
+    <title>Short Musings on Extraction Theory | Adam Fiedler</title>
+    <meta name="description" content="I'm far from being a coffee expert, but I started getting into coffee a bit and thought I could use a summary of what I came to learn.">
+    <meta property="og:title" content="Short Musings on Extraction Theory | Adam Fiedler">
+    <meta property="og:description" content="I'm far from being a coffee expert, but I started getting into coffee a bit and thought I could use a summary of what I came to learn.">
+    <meta property="og:type" content="article">
+    <meta property="og:article:author" content="Adam Fiedler">
+    <meta property="og:url" content="https://fiedler.sk/opinion/2024-02-19-short-musings-on-extraction-theory.html">
+    <meta property="og:image" content="https://fiedler.sk/images/og.jpg">
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&family=Source+Sans+Pro:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/light.css?new=3">
+    <link rel="stylesheet" type="text/css" href="../css/syntax.css">
+    
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="../images/og.jpg" alt="A headshot of Adam Fiedler" class="round">
+            <div class="caption">Adam Fiedler</div>
+        </div>
+        <nav>
+            <a href="../">Home</a>
+            <a href="../opinion">Opinion</a> <a href="../programming">Programming</a> <a href="../verification">Verification</a>
+            <a href="../publications">Publications</a>
+            <a href="../about">About</a>
+        </nav>
+    </header>
+    <main role="main">
+        <div class="body">
+            <div class="title">
+                <h1>Short Musings on Extraction Theory</h1>
+            </div>
+            <article>
+    <section class="meta">
+        Posted on February 19, 2024 in <a href="../opinion">Opinion</a>
+        
+        
+        
+    </section>
+    <section class="body">
+        
+            
+            <p>I'm far from being a coffee expert, but I started getting into coffee a bit and thought I could use a summary of what I came to learn.</p>
+            
+        
+        <p>If you buy an espresso machine and want to get the most out of it, you will start looking for how-to’s on the web. You will soon find out you also need a grinder and a proper scale. And then most likely you quickly come across the following recipe:</p>
+<p>18 grams, 1/2 ratio, 20s-30s time</p>
+<p>Although it’s pretty straightforward to understand, all sorts of follow-up questions come up. First of all, it is not at all clear how to achieve this. Why grams and not dl? Why is time important if you know the ratio and the input weight? Why 18 grams if this is actually a recipe for a <em>double</em>, and a single basket can only take up to 10 grams? The interesting concept that connects all of these questions is <em>extraction theory</em>.</p>
+<h1 id="extraction">Extraction</h1>
+<p>I would call extraction a measure specifying the intensity of getting substances from the ground beans to water per a unit of time. To get the best possible coffee, you want extraction appropriate for the beans. This might be an oversimplification, but lighter beans need more extraction whereas darker beans need less extraction – but that is out of our scope here.</p>
+<h2 id="one-can-influence-extraction-in-many-ways-with-relations-given-in-the-following-table.">One can influence extraction in many ways, with relations given in the following table.</h2>
+<p>temperature | ^ amount of water | ^ … 1/2 ratio pressure | ^ brew time | ^ … 20-30s time dose | &gt; … 18 grams grind size | &gt; ———————————————— Here <code>^</code> means, e.g., that the higher the temperature, the higher the extraction. About <code>&gt;</code>, for example, the higher the dose, the lower the extraction. In other words, it takes more “work” to extract a higher dose of coffee, and more “work” to extract from finely ground beans. The rightmost column points to our original “ideal” recipe that tells us how to get a proper extraction.</p>
+<p>Extraction is only useful insofar as it is <em>consistent</em> across the entire basket. It is a measure per particle in the basket. This is why one needs to ensure an <em>even</em> extraction, where each particle is in contact with roughly the same amount of water. There are many ways to achieve this in normal ways, like - proper tamping, - using a WDT tool, - having a dry basket before using.</p>
+<h1 id="working-with-the-recipe">Working with the recipe</h1>
+<p>We usually try to fix all variables except for one when trying to improve the taste, in our case, the recipe allows for changing the brew time. In theory, it is easy what to do when we do not like the taste and the beans are ok. When the taste is sour, we want to increase extraction so we increase the brew time. When the taste is bitter, we want to decrease extraction so we decrease the brew time.</p>
+<p>The difficult thing is that changing any one of these factors in our table can influence the others. For example, if we fix 18 grams and a 1/2 ratio, how do we change just the brew time? Observe that we cannot simply stop the machine sooner, because then the 1/2 ratio is broken. What do we do?</p>
+<p>It depends on what tools we have at our disposal. Based on my machine, I will assume that we cannot change the temperature and cannot change the pressure. If the machine is already “dialed in” (or reaching our recipe within reasonable bounds), everything is ideal and stays the same, we can increase (decrease) the brew time simply by grinding finer (coarser). The next time we are making coffee, we are looking at the output grams and reaching a ratio of 1/2 should take a bigger (smaller) amount of time.</p>
+<p>However, we usually try to grind as fine as possible. And if we start grinding too fine when increasing the brew time, and our machine chokes, then we have to figure out a different strategy. Either we have to keep a good enough range for both directions on the grinder that our machine can handle, which might not be possible if we can’t change the pressure, or change some of the other variables. On that maybe next time.</p>
+<h1 id="troubleshooting">Troubleshooting</h1>
+<p>I will try to expand this of small bits of advice.</p>
+<ol type="1">
+<li><p>Puck is too mushy … increase dose in the basket.</p></li>
+<li><p>I can’t make good steamed milk… buy a thermometer and try to maximize the steaming time, e.g., by keeping the jug (and the milk) in the refrigerator.</p></li>
+<li><p>The consistency of my foam is not good for latte art … there might be too much foam, or too much time spent on making foam.</p></li>
+</ol>
+    </section>
+    
+    <section class="footer">
+        <div class="line"></div>
+        Read more articles on: <a href="../topics/coffee">coffee</a>.
+    </section>
+    
+</article>
+
+            <p>
+                <a href="#" class="btn up"><i class="fa fa-arrow-up"></i>
+                <span class="sr-only">Go up</span></a>
+            </p>
+        </div>
+    </main>
+    <footer>
+        <div class="body">
+            &copy; Adam Fiedler 2024
+            <div class="heart">
+                Running with &hearts; on
+                <a href="https://jaspervdj.be/hakyll">Hakyll</a>. Here's the <a href="https://github.com/fiedlr/fiedlr">source</a>.
+            </div>
+        </div>
+        <div class="social">
+            <a class="em" href="mailto:info@fiedlr.com">
+                <i class="fa fa-envelope"><span class="sr-only">Write me an e-mail</span></i>
+            </a>
+            <a class="tw" href="https://twitter.com/fiedlr">
+                <i class="fa fa-twitter"><span class="sr-only">Tweet me</span></i>
+            </a>
+            <a class="li" href="https://linkedin.com/in/fiedlr">
+                <i class="fa fa-linkedin"><span class="sr-only">I'm on LinkedIn</span></i>
+            </a>
+            <a class="gh" href="https://github.com/fiedlr">
+                <i class="fa fa-github"><span class="sr-only">My GitHub projects</span></i>
+            </a>
+        </div>
+    </footer>
+    
+</body>
+</html>

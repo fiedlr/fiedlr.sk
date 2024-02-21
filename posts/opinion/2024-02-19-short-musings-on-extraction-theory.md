@@ -1,8 +1,8 @@
 ---
-title: Musings on Extraction Theory
+title: Short Musings on Extraction Theory
 author: Adam Fiedler
 teaser: "I'm far from being a coffee expert, but I started getting into coffee a bit
-and thought I could use a summary of what I came to learn.
+and thought I could use a summary of what I came to learn."
 tags: coffee
 ---
 
