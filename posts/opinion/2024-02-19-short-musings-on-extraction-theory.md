@@ -28,14 +28,15 @@ This might be an oversimplification, but lighter beans need more extraction wher
 darker beans need less extraction -- but that is out of our scope here.
 
 One can influence extraction in many ways, with relations given in the following table.
-------------------------------------------------
+```html
 temperature          |          ^
 amount of water      |          ^      ... 1/2 ratio
 pressure             |          ^
 brew time            |          ^      ... 20-30s time
 dose                 |          >      ... 18 grams
 grind size           |          >
-------------------------------------------------
+```
+
 Here `^` means, e.g., that the higher the temperature, the higher the extraction.
 About `>`, for example, the higher the dose, the lower the extraction.
 In other words, it takes more "work" to extract a higher dose of coffee, and more "work" to extract from finely ground beans.
