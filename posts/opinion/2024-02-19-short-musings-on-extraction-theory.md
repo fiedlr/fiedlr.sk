@@ -32,8 +32,8 @@ One can influence extraction in many ways, with relations given in the following
 temperature  | ^
 water amount | ^? ... 1/2 ratio
 pressure     | ^
-brew time    | ^  ... 20-30s time
-dose         | >  ... 18 grams
+brew time    | ^  ... 20-30s
+dose         | >  ... 18g
 grind size   | >
 ```
 
@@ -97,10 +97,10 @@ I regretfully admit that I am usually unsuccessful, as I cannot draw very well e
 
 # Troubleshooting
 
-I will try to expand this of small bits of advice.
+I will try to keep expanding this list.
 
-1. Puck is too mushy ... increase dose in the basket.
+1. Puck is too mushy... Increase dose in the basket.
 
-2. I can't make good steamed milk... buy a thermometer and try to maximize the steaming time, e.g., by keeping the jug (and the milk) in the refrigerator, and warming up the steaming wand beforehand.
+2. I can't make good steamed milk... Buy a thermometer and try to maximize the steaming time, e.g., by keeping the jug (and the milk) in the refrigerator, and warming up the steaming wand beforehand.
 
-3. The consistency of my foam is not good for latte art ... we pushed too little/too much air into the milk or we didn't give it enough spinning.
+3. The consistency of my foam is not good for latte art... We pushed too little/too much air into the milk or we didn't give it enough of a spin.
