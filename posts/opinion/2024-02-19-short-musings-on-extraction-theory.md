@@ -29,12 +29,12 @@ darker beans need less extraction -- but that is out of our scope here.
 
 One can influence extraction in many ways, with relations given in the following table.
 ```html
-temperature     |   ^
-amount of water |   ^?  ... 1/2 ratio
-pressure        |   ^
-brew time       |   ^   ... 20-30s time
-dose            |   >   ... 18 grams
-grind size      |   >
+temperature  | ^
+water amount | ^? ... 1/2 ratio
+pressure     | ^
+brew time    | ^  ... 20-30s time
+dose         | >  ... 18 grams
+grind size   | >
 ```
 
 Here `^` means, e.g., that the higher the temperature, the higher the extraction.
