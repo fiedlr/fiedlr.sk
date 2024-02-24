@@ -60,7 +60,7 @@ When the taste is sour, we want to increase extraction so we increase the brew t
 When the taste is bitter, we want to decrease extraction so we decrease the brew time.
 
 The difficult thing is that changing any one of these factors in our table can influence the others.
-Or if we fix 18 grams and a 1/2 ratio, how do we change just the brew time?
+For example, if we fix 18 grams and a 1/2 ratio, how do we change just the brew time?
 Observe that we cannot simply stop the machine sooner, because then the 1/2 ratio is broken.
 What do we do?
 
