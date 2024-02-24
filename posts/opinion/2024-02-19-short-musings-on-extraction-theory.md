@@ -74,12 +74,33 @@ And if we start grinding too fine when increasing the brew time, and our machine
 Either we have to keep a good enough range for both directions on the grinder that our machine can handle, which might not be possible if we can't change the pressure, or change some of the other variables.
 On that maybe next time.
 
+# Steaming milk
+
+People like to use more technical terms like microfoam and macrofoam.
+When you are actually steaming milk, most likely you will not stare at it with a microscope.
+The milk will be in a stainless steel jug, and you will not be able to peek in.
+For an amateur like me, it is easier to simply differentiate between milk and foam, and this brought me better results.
+
+The technique depends on our expectations, i.e., what we want to get from the milk.
+Cappuccinos [https://en.wikipedia.org/wiki/Cappuccino#/media/File:Cappuccino_A.jpg](in this "Kapuziner" style) are easier to make because there is no latte art involved.
+You start with a jug filled up to a quarter, and then you try to push roughly the same amount of air into the milk while keeping the milk spinning.
+Once you reach one half of the jug, just spin the milk until you reach the ideal temperature.
+If successful, at the end you will get steamed milk with a blob of foam on top that you simply pour to your espresso shot.
+
+Where I live, cappuccinos are basically lattes served with less milk and just a tiny bit of foam on top.
+This is (I presume) to be able to keep latte art.
+Instead of pushing too much air, we have to keep it at a lower level, I would say roughly in a 1/4 ratio (foam to milk).
+Then simply keep the milk spinning until reaching the ideal temperature.
+After it is done, first you will pour in the steamed milk, and at the end there will remain a tiny layer of foam in the jug that you can do your latte art with.
+The last part, of course, is less technical and more depends on one's ability to draw with liquids.
+I regretfully admit that I am usually unsuccessful, as I cannot draw very well even with a pencil :-)
+
 # Troubleshooting
 
 I will try to expand this of small bits of advice.
 
 1. Puck is too mushy ... increase dose in the basket.
 
-2. I can't make good steamed milk... buy a thermometer and try to maximize the steaming time, e.g., by keeping the jug (and the milk) in the refrigerator.
+2. I can't make good steamed milk... buy a thermometer and try to maximize the steaming time, e.g., by keeping the jug (and the milk) in the refrigerator, and warming up the steaming wand beforehand.
 
-3. The consistency of my foam is not good for latte art ... there might be too much foam, or too much time spent on making foam.
+3. The consistency of my foam is not good for latte art ... we pushed too little/too much air into the milk or we didn't give it enough spinning.
