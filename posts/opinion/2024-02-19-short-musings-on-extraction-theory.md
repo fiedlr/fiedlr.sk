@@ -29,16 +29,17 @@ darker beans need less extraction -- but that is out of our scope here.
 
 One can influence extraction in many ways, with relations given in the following table.
 ```html
-temperature          |          ^
-amount of water      |          ^      ... 1/2 ratio
-pressure             |          ^
-brew time            |          ^      ... 20-30s time
-dose                 |          >      ... 18 grams
-grind size           |          >
+temperature     |   ^
+amount of water |   ^?  ... 1/2 ratio
+pressure        |   ^
+brew time       |   ^   ... 20-30s time
+dose            |   >   ... 18 grams
+grind size      |   >
 ```
 
 Here `^` means, e.g., that the higher the temperature, the higher the extraction.
-About `>`, for example, the higher the dose, the lower the extraction.
+In the case of the amount of water, it is questionable because more water can extract more from the beans, but also dillutes the already extracted coffee.
+As for `>`, for example, the higher the dose, the lower the extraction.
 In other words, it takes more "work" to extract a higher dose of coffee, and more "work" to extract from finely ground beans.
 The rightmost column points to our original "ideal" recipe that tells us how to get a proper extraction.
 
@@ -59,7 +60,7 @@ When the taste is sour, we want to increase extraction so we increase the brew t
 When the taste is bitter, we want to decrease extraction so we decrease the brew time.
 
 The difficult thing is that changing any one of these factors in our table can influence the others.
-For example, if we fix 18 grams and a 1/2 ratio, how do we change just the brew time?
+Or if we fix 18 grams and a 1/2 ratio, how do we change just the brew time?
 Observe that we cannot simply stop the machine sooner, because then the 1/2 ratio is broken.
 What do we do?
 
