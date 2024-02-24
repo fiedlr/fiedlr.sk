@@ -82,7 +82,7 @@ The milk will be in a stainless steel jug, and you will not be able to peek in.
 For an amateur like me, it is easier to simply differentiate between milk and foam, and this brought me better results.
 
 The technique depends on our expectations, i.e., what we want to get from the milk.
-Cappuccinos [https://en.wikipedia.org/wiki/Cappuccino#/media/File:Cappuccino_A.jpg](in this "Kapuziner" style) are easier to make because there is no latte art involved.
+Cappuccinos (in this "Kapuziner" style)[https://en.wikipedia.org/wiki/Cappuccino#/media/File:Cappuccino_A.jpg] are easier to make because there is no latte art involved.
 You start with a jug filled up to a quarter, and then you try to push roughly the same amount of air into the milk while keeping the milk spinning.
 Once you reach one half of the jug, just spin the milk until you reach the ideal temperature.
 If successful, at the end you will get steamed milk with a blob of foam on top that you simply pour to your espresso shot.
