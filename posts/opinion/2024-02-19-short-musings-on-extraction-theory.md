@@ -21,24 +21,23 @@ The interesting concept that connects all of these questions is *extraction theo
 
 # Extraction
 
-I would call extraction a measure specifying the intensity of getting
-substances from the ground beans to water per a unit of time.
-To get the best possible coffee, you want extraction appropriate for the beans.
-This might be an oversimplification, but lighter beans need more extraction whereas
-darker beans need less extraction -- but that is out of our scope here.
-
+I would call extraction a measure specifying the intensity of getting active substances from the ground beans into water per a unit of time.
+The higher the extraction, the more substances are dissolved per a unit of time.
 One can influence extraction in many ways, with relations given in the following table.
 ```html
 temperature  | ^
 water amount | ^? ... 1/2 ratio
 pressure     | ^
 brew time    | ^  ... 20-30s
+roast level  | ^
 dose         | >  ... 18g
 grind size   | >
 ```
 
 Here `^` means, e.g., that the higher the temperature, the higher the extraction.
-In the case of the amount of water, it is questionable because more water can extract more from the beans, but also dillutes the already extracted coffee.
+One can see that roast level also affects extraction, where darker beans need less time to extract.
+Darker beans are also drier, so water flows much quicker through them compared to ligher beans ground at the same grind size - maybe this is why some people tend to spray beans before grinding them.
+In the case of the amount of water, it is a bit controversial because more water can extract more from the beans, but also dillutes the already extracted coffee.
 As for `>`, for example, the higher the dose, the lower the extraction.
 In other words, it takes more "work" to extract a higher dose of coffee, and more "work" to extract from finely ground beans.
 The rightmost column points to our original "ideal" recipe that tells us how to get a proper extraction.
